@@ -42,40 +42,40 @@ foreach my $ary (@arys) {
     our $str = $ary->[0];
     our $ret = $ary->[1];
 
-    print sjis2003_to_utf16be($str) eq ""
+    print sjis2004_to_utf16be($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf16le($str) eq ""
+    print sjis2004_to_utf16le($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf32be($str) eq ""
+    print sjis2004_to_utf32be($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf32le($str) eq ""
+    print sjis2004_to_utf32le($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf8   ($str) eq ""
+    print sjis2004_to_utf8   ($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_unicode($str) eq ""
+    print sjis2004_to_unicode($str) eq ""
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf16be(\&h_fb, $str) eq $ret
+    print sjis2004_to_utf16be(\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf16le(\&h_fb, $str) eq $ret
+    print sjis2004_to_utf16le(\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf32be(\&h_fb, $str) eq $ret
+    print sjis2004_to_utf32be(\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf32le(\&h_fb, $str) eq $ret
+    print sjis2004_to_utf32le(\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_utf8   (\&h_fb, $str) eq $ret
+    print sjis2004_to_utf8   (\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print sjis2003_to_unicode(\&h_fb, $str) eq $ret
+    print sjis2004_to_unicode(\&h_fb, $str) eq $ret
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 }
 
@@ -83,88 +83,88 @@ foreach my $ary (@arys) {
 
 our $string = "\x81\x00";
 
-print sjis2003_to_utf16be(\&h_fb, $string) eq "[81]\x00\x00"
+print sjis2004_to_utf16be(\&h_fb, $string) eq "[81]\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf16le(\&h_fb, $string) eq "[81]\x00\x00"
+print sjis2004_to_utf16le(\&h_fb, $string) eq "[81]\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32be(\&h_fb, $string) eq "[81]\x00\x00\x00\x00"
+print sjis2004_to_utf32be(\&h_fb, $string) eq "[81]\x00\x00\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32le(\&h_fb, $string) eq "[81]\x00\x00\x00\x00"
+print sjis2004_to_utf32le(\&h_fb, $string) eq "[81]\x00\x00\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf8   (\&h_fb, $string) eq "[81]\x00"
+print sjis2004_to_utf8   (\&h_fb, $string) eq "[81]\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_unicode(\&h_fb, $string) eq "[81]\x00"
+print sjis2004_to_unicode(\&h_fb, $string) eq "[81]\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 ##### 212..217
 
 $string = "\x82\x39";
 
-print sjis2003_to_utf16be(\&h_fb, $string) eq "[82]\x00\x39"
+print sjis2004_to_utf16be(\&h_fb, $string) eq "[82]\x00\x39"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf16le(\&h_fb, $string) eq "[82]\x39\x00"
+print sjis2004_to_utf16le(\&h_fb, $string) eq "[82]\x39\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32be(\&h_fb, $string) eq "[82]\x00\x00\x00\x39"
+print sjis2004_to_utf32be(\&h_fb, $string) eq "[82]\x00\x00\x00\x39"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32le(\&h_fb, $string) eq "[82]\x39\x00\x00\x00"
+print sjis2004_to_utf32le(\&h_fb, $string) eq "[82]\x39\x00\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf8   (\&h_fb, $string) eq "[82]\x39"
+print sjis2004_to_utf8   (\&h_fb, $string) eq "[82]\x39"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_unicode(\&h_fb, $string) eq "[82]\x39"
+print sjis2004_to_unicode(\&h_fb, $string) eq "[82]\x39"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 ##### 218..223
 
 $string = "\xF0\x7F";
 
-print sjis2003_to_utf16be(\&h_fb, $string) eq "[F0]\x00\x7F"
+print sjis2004_to_utf16be(\&h_fb, $string) eq "[F0]\x00\x7F"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf16le(\&h_fb, $string) eq "[F0]\x7F\x00"
+print sjis2004_to_utf16le(\&h_fb, $string) eq "[F0]\x7F\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32be(\&h_fb, $string) eq "[F0]\x00\x00\x00\x7F"
+print sjis2004_to_utf32be(\&h_fb, $string) eq "[F0]\x00\x00\x00\x7F"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32le(\&h_fb, $string) eq "[F0]\x7F\x00\x00\x00"
+print sjis2004_to_utf32le(\&h_fb, $string) eq "[F0]\x7F\x00\x00\x00"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf8   (\&h_fb, $string) eq "[F0]\x7F"
+print sjis2004_to_utf8   (\&h_fb, $string) eq "[F0]\x7F"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_unicode(\&h_fb, $string) eq "[F0]\x7F"
+print sjis2004_to_unicode(\&h_fb, $string) eq "[F0]\x7F"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 ##### 224..229
 
 $string = "\xFC\xFF";
 
-print sjis2003_to_utf16be(\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_utf16be(\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf16le(\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_utf16le(\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32be(\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_utf32be(\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf32le(\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_utf32le(\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_utf8   (\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_utf8   (\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print sjis2003_to_unicode(\&h_fb, $string) eq "[FC][FF]"
+print sjis2004_to_unicode(\&h_fb, $string) eq "[FC][FF]"
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 1;

@@ -109,12 +109,12 @@ sv_cat_retcvref (SV *dst, SV *cv, SV *sv, bool isbyte)
 #define NUM_fromUTF  (8)
 
 static char* funcname_to[2 * NUM_toUTF] = {
-    "sjis2003_to_unicode",
-    "sjis2003_to_utf8",
-    "sjis2003_to_utf16le",
-    "sjis2003_to_utf16be",
-    "sjis2003_to_utf32le",
-    "sjis2003_to_utf32be",
+    "sjis2004_to_unicode",
+    "sjis2004_to_utf8",
+    "sjis2004_to_utf16le",
+    "sjis2004_to_utf16be",
+    "sjis2004_to_utf32le",
+    "sjis2004_to_utf32be",
     "sjis0213_to_unicode",
     "sjis0213_to_utf8",
     "sjis0213_to_utf16le",
@@ -124,14 +124,14 @@ static char* funcname_to[2 * NUM_toUTF] = {
 };
 
 static char* funcname_fm[2 * NUM_fromUTF] = {
-    "unicode_to_sjis2003",
-       "utf8_to_sjis2003",
-    "utf16le_to_sjis2003",
-    "utf16be_to_sjis2003",
-    "utf32le_to_sjis2003",
-    "utf32be_to_sjis2003",
-      "utf16_to_sjis2003",
-      "utf32_to_sjis2003",
+    "unicode_to_sjis2004",
+       "utf8_to_sjis2004",
+    "utf16le_to_sjis2004",
+    "utf16be_to_sjis2004",
+    "utf32le_to_sjis2004",
+    "utf32be_to_sjis2004",
+      "utf16_to_sjis2004",
+      "utf32_to_sjis2004",
     "unicode_to_sjis0213",
        "utf8_to_sjis0213",
     "utf16le_to_sjis0213",
@@ -187,13 +187,13 @@ MODULE = ShiftJIS::X0213::MapUTF	PACKAGE = ShiftJIS::X0213::MapUTF
 PROTOTYPES: DISABLE
 
 void
-sjis2003_to_unicode (...)
+sjis2004_to_unicode (...)
   ALIAS:
-    sjis2003_to_utf8    = 1
-    sjis2003_to_utf16le = 2
-    sjis2003_to_utf16be = 3
-    sjis2003_to_utf32le = 4
-    sjis2003_to_utf32be = 5
+    sjis2004_to_utf8    = 1
+    sjis2004_to_utf16le = 2
+    sjis2004_to_utf16be = 3
+    sjis2004_to_utf32le = 4
+    sjis2004_to_utf32be = 5
     sjis0213_to_unicode = 6
     sjis0213_to_utf8    = 7
     sjis0213_to_utf16le = 8
@@ -285,15 +285,15 @@ sjis2003_to_unicode (...)
 
 
 void
-unicode_to_sjis2003 (...)
+unicode_to_sjis2004 (...)
   ALIAS:
-       utf8_to_sjis2003 = 1
-    utf16le_to_sjis2003 = 2
-    utf16be_to_sjis2003 = 3
-    utf32le_to_sjis2003 = 4
-    utf32be_to_sjis2003 = 5
-      utf16_to_sjis2003 = 6
-      utf32_to_sjis2003 = 7
+       utf8_to_sjis2004 = 1
+    utf16le_to_sjis2004 = 2
+    utf16be_to_sjis2004 = 3
+    utf32le_to_sjis2004 = 4
+    utf32be_to_sjis2004 = 5
+      utf16_to_sjis2004 = 6
+      utf32_to_sjis2004 = 7
     unicode_to_sjis0213 = 8
        utf8_to_sjis0213 = 9
     utf16le_to_sjis0213 = 10

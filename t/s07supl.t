@@ -14,71 +14,71 @@ print "ok 1\n";
 
 our $uniStr = "ABC".pack('U*', 0xB5, 0x3042);
 
-print "ABC\x82\xA0" eq unicode_to_sjis2003($uniStr)
+print "ABC\x82\xA0" eq unicode_to_sjis2004($uniStr)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "ABC\x83\xCA\x82\xA0" eq
-	unicode_to_sjis2003(\&to_sjis2003_supplements, $uniStr)
+	unicode_to_sjis2004(\&to_sjis2004_supplements, $uniStr)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x82\xA0" eq utf8_to_sjis2003("ABC\xC2\xB5\xE3\x81\x82")
+print "ABC\x82\xA0" eq utf8_to_sjis2004("ABC\xC2\xB5\xE3\x81\x82")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "ABC\x83\xCA\x82\xA0" eq
-	utf8_to_sjis2003(\&to_sjis2003_supplements, "ABC\xC2\xb5\xE3\x81\x82")
+	utf8_to_sjis2004(\&to_sjis2004_supplements, "ABC\xC2\xb5\xE3\x81\x82")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x82\xA0" eq utf16le_to_sjis2003("A\0B\0C\0\xb5\0\x42\x30")
+print "ABC\x82\xA0" eq utf16le_to_sjis2004("A\0B\0C\0\xb5\0\x42\x30")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf16le_to_sjis2003(
-	\&to_sjis2003_supplements, "A\0B\0C\0\xb5\0\x42\x30")
+print "ABC\x83\xCA\x82\xA0" eq utf16le_to_sjis2004(
+	\&to_sjis2004_supplements, "A\0B\0C\0\xb5\0\x42\x30")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf16le_to_sjis2003(
-	\&to_sjis2003_supplements, "A\0B\0C\0\xb5\0\x42\x30\x00")
+print "ABC\x83\xCA\x82\xA0" eq utf16le_to_sjis2004(
+	\&to_sjis2004_supplements, "A\0B\0C\0\xb5\0\x42\x30\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x82\xA0" eq utf16be_to_sjis2003("\0A\0B\0C\0\xb5\x30\x42")
+print "ABC\x82\xA0" eq utf16be_to_sjis2004("\0A\0B\0C\0\xb5\x30\x42")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf16be_to_sjis2003(
-	\&to_sjis2003_supplements, "\0A\0B\0C\0\xb5\x30\x42")
+print "ABC\x83\xCA\x82\xA0" eq utf16be_to_sjis2004(
+	\&to_sjis2004_supplements, "\0A\0B\0C\0\xb5\x30\x42")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf16be_to_sjis2003(
-	\&to_sjis2003_supplements, "\0A\0B\0C\0\xb5\x30\x42\x00")
+print "ABC\x83\xCA\x82\xA0" eq utf16be_to_sjis2004(
+	\&to_sjis2004_supplements, "\0A\0B\0C\0\xb5\x30\x42\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x82\xA0" eq utf32le_to_sjis2003
+print "ABC\x82\xA0" eq utf32le_to_sjis2004
 	("A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\0\x42\x30\0\0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2004(\&to_sjis2004_supplements,
 	"A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\0\x42\x30\0\0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2004(\&to_sjis2004_supplements,
 	"A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\0\x42\x30\0\0\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32le_to_sjis2004(\&to_sjis2004_supplements,
 	"A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\0\x42\x30\0\0\x00\x01")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x82\xA0" eq utf32be_to_sjis2003(
+print "ABC\x82\xA0" eq utf32be_to_sjis2004(
 	"\0\0\0A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\x30\x42")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2004(\&to_sjis2004_supplements,
 	"\0\0\0A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\x30\x42")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2004(\&to_sjis2004_supplements,
 	"\0\0\0A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\x30\x42\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2003(\&to_sjis2003_supplements,
+print "ABC\x83\xCA\x82\xA0" eq utf32be_to_sjis2004(\&to_sjis2004_supplements,
 	"\0\0\0A\0\0\0B\0\0\0C\0\0\0\xb5\0\0\x30\x42\x00\x01")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
@@ -101,75 +101,75 @@ our $utf32_n = $utf32be;
 our $sjis    = "ABC\x82\xA0";
 our $sjisFB  = "ABC\x81\xD4\x81\xD5\xFC\x5A\x82\xA0";
 
-print $sjis eq unicode_to_sjis2003($unicode)
+print $sjis eq unicode_to_sjis2004($unicode)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf8_to_sjis2003($utf8)
+print $sjis eq utf8_to_sjis2004($utf8)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf16le_to_sjis2003($utf16le)
+print $sjis eq utf16le_to_sjis2004($utf16le)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf16be_to_sjis2003($utf16be)
+print $sjis eq utf16be_to_sjis2004($utf16be)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf32le_to_sjis2003($utf32le)
+print $sjis eq utf32le_to_sjis2004($utf32le)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf32be_to_sjis2003($utf32be)
+print $sjis eq utf32be_to_sjis2004($utf32be)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf16_to_sjis2003($utf16_l)
+print $sjis eq utf16_to_sjis2004($utf16_l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf16_to_sjis2003($utf16_b)
+print $sjis eq utf16_to_sjis2004($utf16_b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf16_to_sjis2003($utf16_n)
+print $sjis eq utf16_to_sjis2004($utf16_n)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf32_to_sjis2003($utf32_l)
+print $sjis eq utf32_to_sjis2004($utf32_l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf32_to_sjis2003($utf32_b)
+print $sjis eq utf32_to_sjis2004($utf32_b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjis eq utf32_to_sjis2003($utf32_n)
+print $sjis eq utf32_to_sjis2004($utf32_n)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq unicode_to_sjis2003(\&to_sjis2003_supplements, $unicode)
+print $sjisFB eq unicode_to_sjis2004(\&to_sjis2004_supplements, $unicode)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf8_to_sjis2003   (\&to_sjis2003_supplements, $utf8)
+print $sjisFB eq utf8_to_sjis2004   (\&to_sjis2004_supplements, $utf8)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf16le_to_sjis2003(\&to_sjis2003_supplements, $utf16le)
+print $sjisFB eq utf16le_to_sjis2004(\&to_sjis2004_supplements, $utf16le)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf16be_to_sjis2003(\&to_sjis2003_supplements, $utf16be)
+print $sjisFB eq utf16be_to_sjis2004(\&to_sjis2004_supplements, $utf16be)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf32le_to_sjis2003(\&to_sjis2003_supplements, $utf32le)
+print $sjisFB eq utf32le_to_sjis2004(\&to_sjis2004_supplements, $utf32le)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf32be_to_sjis2003(\&to_sjis2003_supplements, $utf32be)
+print $sjisFB eq utf32be_to_sjis2004(\&to_sjis2004_supplements, $utf32be)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf16_to_sjis2003(\&to_sjis2003_supplements, $utf16_l)
+print $sjisFB eq utf16_to_sjis2004(\&to_sjis2004_supplements, $utf16_l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf16_to_sjis2003(\&to_sjis2003_supplements, $utf16_b)
+print $sjisFB eq utf16_to_sjis2004(\&to_sjis2004_supplements, $utf16_b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf16_to_sjis2003(\&to_sjis2003_supplements, $utf16_n)
+print $sjisFB eq utf16_to_sjis2004(\&to_sjis2004_supplements, $utf16_n)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf32_to_sjis2003(\&to_sjis2003_supplements, $utf32_l)
+print $sjisFB eq utf32_to_sjis2004(\&to_sjis2004_supplements, $utf32_l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf32_to_sjis2003(\&to_sjis2003_supplements, $utf32_b)
+print $sjisFB eq utf32_to_sjis2004(\&to_sjis2004_supplements, $utf32_b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $sjisFB eq utf32_to_sjis2003(\&to_sjis2003_supplements, $utf32_n)
+print $sjisFB eq utf32_to_sjis2004(\&to_sjis2004_supplements, $utf32_n)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

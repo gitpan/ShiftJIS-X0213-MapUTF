@@ -17,79 +17,79 @@ sub hexNCR { sprintf "&#x%04x;", shift }
 
 #####
 
-print "\x86\x63\x86\x63" x $repeat eq unicode_to_sjis2003(
-    sjis2003_to_unicode("\x85\x7B\x86\x7B\x86\x63" x $repeat))
+print "\x86\x63\x86\x63" x $repeat eq unicode_to_sjis2004(
+    sjis2004_to_unicode("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x86\x63\x86\x63" x $repeat eq utf8_to_sjis2003(
-    sjis2003_to_utf8("\x85\x7B\x86\x7B\x86\x63" x $repeat))
+print "\x86\x63\x86\x63" x $repeat eq utf8_to_sjis2004(
+    sjis2004_to_utf8("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x86\x63\x86\x63" x $repeat eq utf16le_to_sjis2003(
-    sjis2003_to_utf16le("\x85\x7B\x86\x7B\x86\x63" x $repeat))
+print "\x86\x63\x86\x63" x $repeat eq utf16le_to_sjis2004(
+    sjis2004_to_utf16le("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x86\x63\x86\x63" x $repeat eq utf16be_to_sjis2003(
-    sjis2003_to_utf16be("\x85\x7B\x86\x7B\x86\x63" x $repeat))
+print "\x86\x63\x86\x63" x $repeat eq utf16be_to_sjis2004(
+    sjis2004_to_utf16be("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x86\x63\x86\x63" x $repeat eq utf32le_to_sjis2003(
-    sjis2003_to_utf32le("\x85\x7B\x86\x7B\x86\x63" x $repeat))
+print "\x86\x63\x86\x63" x $repeat eq utf32le_to_sjis2004(
+    sjis2004_to_utf32le("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x86\x63\x86\x63" x $repeat eq utf32be_to_sjis2003(
-    sjis2003_to_utf32be("\x85\x7B\x86\x7B\x86\x63" x $repeat))
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-#####
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    unicode_to_sjis2003("\x{E6}\x00\x{E6}\x{300}\x00")
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    utf8_to_sjis2003("\xc3\xa6\x00\xc3\xa6\xcc\x80\x00")
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    utf16le_to_sjis2003("\xE6\x00\x00\x00\xE6\x00\x00\x03\x00\x00")
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    utf16be_to_sjis2003("\x00\xE6\x00\x00\x00\xE6\x03\x00\x00\x00")
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    utf32le_to_sjis2003("\xE6\0\0\0\x00\0\0\0\xE6\0\0\0\x00\x03\0\0\x00\0\0\0")
-    ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x85\x7B\x00\x86\x63\x00" eq
-    utf32be_to_sjis2003("\0\0\0\xE6\0\0\0\x00\0\0\0\xE6\0\0\x03\x00\0\0\0\x00")
+print "\x86\x63\x86\x63" x $repeat eq utf32be_to_sjis2004(
+    sjis2004_to_utf32be("\x85\x7B\x86\x7B\x86\x63" x $repeat))
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 #####
 
 print "\x85\x7B\x00\x86\x63\x00" eq
-    unicode_to_sjis2003(sub {""}, "\x{E6}\x00\x{E6}\x{300}\x00")
+    unicode_to_sjis2004("\x{E6}\x00\x{E6}\x{300}\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x00\x86\x63\x00" eq
-    utf8_to_sjis2003(sub {""}, "\xc3\xa6\x00\xc3\xa6\xcc\x80\x00")
+    utf8_to_sjis2004("\xc3\xa6\x00\xc3\xa6\xcc\x80\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x00\x86\x63\x00" eq
-    utf16le_to_sjis2003(sub {""}, "\xE6\x00\x00\x00\xE6\x00\x00\x03\x00\x00")
+    utf16le_to_sjis2004("\xE6\x00\x00\x00\xE6\x00\x00\x03\x00\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x00\x86\x63\x00" eq
-    utf16be_to_sjis2003(sub {""}, "\x00\xE6\x00\x00\x00\xE6\x03\x00\x00\x00")
+    utf16be_to_sjis2004("\x00\xE6\x00\x00\x00\xE6\x03\x00\x00\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x85\x7B\x00\x86\x63\x00" eq utf32le_to_sjis2003(sub {""},
+print "\x85\x7B\x00\x86\x63\x00" eq
+    utf32le_to_sjis2004("\xE6\0\0\0\x00\0\0\0\xE6\0\0\0\x00\x03\0\0\x00\0\0\0")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x85\x7B\x00\x86\x63\x00" eq
+    utf32be_to_sjis2004("\0\0\0\xE6\0\0\0\x00\0\0\0\xE6\0\0\x03\x00\0\0\0\x00")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+#####
+
+print "\x85\x7B\x00\x86\x63\x00" eq
+    unicode_to_sjis2004(sub {""}, "\x{E6}\x00\x{E6}\x{300}\x00")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x85\x7B\x00\x86\x63\x00" eq
+    utf8_to_sjis2004(sub {""}, "\xc3\xa6\x00\xc3\xa6\xcc\x80\x00")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x85\x7B\x00\x86\x63\x00" eq
+    utf16le_to_sjis2004(sub {""}, "\xE6\x00\x00\x00\xE6\x00\x00\x03\x00\x00")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x85\x7B\x00\x86\x63\x00" eq
+    utf16be_to_sjis2004(sub {""}, "\x00\xE6\x00\x00\x00\xE6\x03\x00\x00\x00")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x85\x7B\x00\x86\x63\x00" eq utf32le_to_sjis2004(sub {""},
 	"\xE6\0\0\0\x00\0\0\0\xE6\0\0\0\x00\x03\0\0\x00\0\0\0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x85\x7B\x00\x86\x63\x00" eq utf32be_to_sjis2003(sub {""},
+print "\x85\x7B\x00\x86\x63\x00" eq utf32be_to_sjis2004(sub {""},
 	"\0\0\0\xE6\0\0\0\x00\0\0\0\xE6\0\0\x03\x00\0\0\0\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

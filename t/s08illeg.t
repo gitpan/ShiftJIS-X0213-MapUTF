@@ -11,94 +11,94 @@ print "ok 1\n";
 
 #####
 
-print "" eq utf16le_to_sjis2003("\x00")
+print "" eq utf16le_to_sjis2004("\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf16be_to_sjis2003("\x00")
+print "" eq utf16be_to_sjis2004("\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x00" eq utf16le_to_sjis2003("\x00\x00")
+print "\x00" eq utf16le_to_sjis2004("\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x00" eq utf16be_to_sjis2003("\x00\x00")
+print "\x00" eq utf16be_to_sjis2004("\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32le_to_sjis2003("\x00")
+print "" eq utf32le_to_sjis2004("\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32be_to_sjis2003("\x00")
+print "" eq utf32be_to_sjis2004("\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32le_to_sjis2003("\x00\x00")
+print "" eq utf32le_to_sjis2004("\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32be_to_sjis2003("\x00\x00")
+print "" eq utf32be_to_sjis2004("\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32le_to_sjis2003("\x00\x00\x00")
+print "" eq utf32le_to_sjis2004("\x00\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf32be_to_sjis2003("\x00\x00\x00")
+print "" eq utf32be_to_sjis2004("\x00\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x00" eq utf32be_to_sjis2003("\x00\x00\x00\x00")
+print "\x00" eq utf32be_to_sjis2004("\x00\x00\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x00" eq utf32le_to_sjis2003("\x00\x00\x00\x00")
+print "\x00" eq utf32le_to_sjis2004("\x00\x00\x00\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x82\xA0\x41" eq utf16le_to_sjis2003("\x42\x30\x00\xAC\x41\x00\x41")
+print "\x82\xA0\x41" eq utf16le_to_sjis2004("\x42\x30\x00\xAC\x41\x00\x41")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x82\xA0\x41" eq utf16be_to_sjis2003("\x30\x42\xAC\x00\x00\x41\x41")
-   ? "ok" : "not ok" , " ", ++$loaded, "\n";
-
-print "\x82\xA0\x41" eq
-	utf32le_to_sjis2003("\x42\x30\0\0\x00\xAC\0\0\x41\x00\0\0\x41")
+print "\x82\xA0\x41" eq utf16be_to_sjis2004("\x30\x42\xAC\x00\x00\x41\x41")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x82\xA0\x41" eq
-	utf32be_to_sjis2003("\0\0\x30\x42\0\0\xAC\x00\0\0\x00\x41\x41")
+	utf32le_to_sjis2004("\x42\x30\0\0\x00\xAC\0\0\x41\x00\0\0\x41")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x85\x56\x42" eq utf8_to_sjis2003("\xC3\x80\xC0\x80\xC2\x42\xC2\x80")
+print "\x82\xA0\x41" eq
+	utf32be_to_sjis2004("\0\0\x30\x42\0\0\xAC\x00\0\0\x00\x41\x41")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x82\x9f" eq utf8_to_sjis2003("\xE3\x81\xE3\x81\x81")
+print "\x85\x56\x42" eq utf8_to_sjis2004("\xC3\x80\xC0\x80\xC2\x42\xC2\x80")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "\x00" eq utf8_to_sjis2003("\xFF\x81\x81\x00")
+print "\x82\x9f" eq utf8_to_sjis2004("\xE3\x81\xE3\x81\x81")
+   ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "\x00" eq utf8_to_sjis2004("\xFF\x81\x81\x00")
    ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 #####
 
 print "\x85\x7B\x85\x7B" eq
-    utf8_to_sjis2003("\xc3\xa6\xc3\xa6\xcc")
+    utf8_to_sjis2004("\xc3\xa6\xc3\xa6\xcc")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x85\x7B" eq
-    utf16le_to_sjis2003("\xE6\x00\xE6\x00\x03")
+    utf16le_to_sjis2004("\xE6\x00\xE6\x00\x03")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x85\x7B" eq
-    utf16be_to_sjis2003("\x00\xE6\x00\xE6\x03")
+    utf16be_to_sjis2004("\x00\xE6\x00\xE6\x03")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x85\x7B" eq
-    utf32le_to_sjis2003("\xE6\0\0\0\xE6\0\0\0\x00\x03")
+    utf32le_to_sjis2004("\xE6\0\0\0\xE6\0\0\0\x00\x03")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x85\x7B" eq
-    utf32be_to_sjis2003("\0\0\0\xE6\0\0\0\xE6\0\x03\0")
+    utf32be_to_sjis2004("\0\0\0\xE6\0\0\0\xE6\0\x03\0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 print "\x85\x7B\x85\x7B\x85\x7B" eq
-    utf8_to_sjis2003("\xc3\xa6\xc3\xa6\xcc\xc3\xa6")
+    utf8_to_sjis2004("\xc3\xa6\xc3\xa6\xcc\xc3\xa6")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf8_to_sjis2003("\xF0\xAA\xB3\x9E\xF0")
+print "" eq utf8_to_sjis2004("\xF0\xAA\xB3\x9E\xF0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "" eq utf8_to_sjis2003("\xC2\xB5\xC3")
+print "" eq utf8_to_sjis2004("\xC2\xB5\xC3")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

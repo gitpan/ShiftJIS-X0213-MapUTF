@@ -26,22 +26,22 @@ my $h_uni  = pack 'U*', @hangul;
 my $h_utf8 = pack 'a*', pack 'U*', @hangul;
 my $h_ncr  = join '', map sprintf("&#x%x;", $_), @hangul;
 
-print $h_ncr eq utf16le_to_sjis2003(\&hexNCR, $h_u16l)
+print $h_ncr eq utf16le_to_sjis2004(\&hexNCR, $h_u16l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $h_ncr eq utf16be_to_sjis2003(\&hexNCR, $h_u16b)
+print $h_ncr eq utf16be_to_sjis2004(\&hexNCR, $h_u16b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $h_ncr eq utf32le_to_sjis2003(\&hexNCR, $h_u32l)
+print $h_ncr eq utf32le_to_sjis2004(\&hexNCR, $h_u32l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $h_ncr eq utf32be_to_sjis2003(\&hexNCR, $h_u32b)
+print $h_ncr eq utf32be_to_sjis2004(\&hexNCR, $h_u32b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $h_ncr eq unicode_to_sjis2003(\&hexNCR, $h_uni)
+print $h_ncr eq unicode_to_sjis2004(\&hexNCR, $h_uni)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $h_ncr eq utf8_to_sjis2003(\&hexNCR, $h_utf8)
+print $h_ncr eq utf8_to_sjis2004(\&hexNCR, $h_utf8)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 ##### 8..11
@@ -53,15 +53,15 @@ my $o_uni  = pack 'U*', @overbmp;
 my $o_utf8 = pack 'a*', pack 'U*', @overbmp;
 my $o_ncr  = join '', map sprintf("&#x%x;", $_), @overbmp;
 
-print $o_ncr eq utf32le_to_sjis2003(\&hexNCR, $o_u32l)
+print $o_ncr eq utf32le_to_sjis2004(\&hexNCR, $o_u32l)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $o_ncr eq utf32be_to_sjis2003(\&hexNCR, $o_u32b)
+print $o_ncr eq utf32be_to_sjis2004(\&hexNCR, $o_u32b)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $o_ncr eq unicode_to_sjis2003(\&hexNCR, $o_uni)
+print $o_ncr eq unicode_to_sjis2004(\&hexNCR, $o_uni)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print $o_ncr eq utf8_to_sjis2003(\&hexNCR, $o_utf8)
+print $o_ncr eq utf8_to_sjis2004(\&hexNCR, $o_utf8)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

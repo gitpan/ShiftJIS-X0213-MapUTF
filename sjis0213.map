@@ -5,7 +5,7 @@ use vars qw(%SJIS0213_UNI %UNI_SJIS0213 @ADDED2004);
 
 use Carp;
 
-#Shift_JIS-2003/Shift_JISX0213 vs Unicode;
+#Shift_JIS-2004/Shift_JISX0213 vs Unicode;
 
 #Any mappings between 1 char in SJIS and 2 chars in Unicode are
 #represented as "82F5-304B309A\n" (meaning SJIS 0x82F5 <=> U+304B, U+309A).

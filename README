@@ -1,19 +1,19 @@
-ShiftJIS::X0213::MapUTF version 0.20
+ShiftJIS::X0213::MapUTF version 0.21
 ================
 
 NAME
 
 ShiftJIS::X0213::MapUTF
 
-conversion between Shift_JIS-2003/Shift_JISX0213 and Unicode
+conversion between Shift_JIS-2004/Shift_JISX0213 and Unicode
 
 SYNOPSIS
 
     use ShiftJIS::X0213::MapUTF;
 
-    # for Shift_JIS-2003 (specified by JIS X 0213:2004)
-    $utf16be_string  = sjis2003_to_utf16be($sjis2003_string);
-    $sjis2003_string = utf16be_to_sjis2003($utf16be_string);
+    # for Shift_JIS-2004 (specified by JIS X 0213:2004)
+    $utf16be_string  = sjis2004_to_utf16be($sjis2004_string);
+    $sjis2004_string = utf16be_to_sjis2004($utf16be_string);
 
     # for Shift_JISX0213 (specified by JIS X 0213:2000)
     $utf16be_string  = sjis0213_to_utf16be($sjis0213_string);
@@ -23,22 +23,22 @@ DESCRIPTION
 
 This module provides the following functions:
 
-    sjis2003_to_utf8()    converts Shift_JIS-2003 to UTF-8.
-    sjis2003_to_utf16le() converts Shift_JIS-2003 to UTF-16LE.
-    sjis2003_to_utf16be() converts Shift_JIS-2003 to UTF-16BE.
-    sjis2003_to_utf32le() converts Shift_JIS-2003 to UTF-32LE.
-    sjis2003_to_utf32be() converts Shift_JIS-2003 to UTF-32BE.
-    sjis2003_to_unicode() converts Shift_JIS-2003 to Unicode[*].
+    sjis2004_to_utf8()    converts Shift_JIS-2004 to UTF-8.
+    sjis2004_to_utf16le() converts Shift_JIS-2004 to UTF-16LE.
+    sjis2004_to_utf16be() converts Shift_JIS-2004 to UTF-16BE.
+    sjis2004_to_utf32le() converts Shift_JIS-2004 to UTF-32LE.
+    sjis2004_to_utf32be() converts Shift_JIS-2004 to UTF-32BE.
+    sjis2004_to_unicode() converts Shift_JIS-2004 to Unicode[*].
 
-    utf8_to_sjis2003()    converts UTF-8      to Shift_JIS-2003.
-    utf16le_to_sjis2003() converts UTF-16LE   to Shift_JIS-2003.
-    utf16be_to_sjis2003() converts UTF-16BE   to Shift_JIS-2003.
-    utf32le_to_sjis2003() converts UTF-32LE   to Shift_JIS-2003.
-    utf32be_to_sjis2003() converts UTF-32BE   to Shift_JIS-2003.
-    unicode_to_sjis2003() converts Unicode[*] to Shift_JIS-2003.
+    utf8_to_sjis2004()    converts UTF-8      to Shift_JIS-2004.
+    utf16le_to_sjis2004() converts UTF-16LE   to Shift_JIS-2004.
+    utf16be_to_sjis2004() converts UTF-16BE   to Shift_JIS-2004.
+    utf32le_to_sjis2004() converts UTF-32LE   to Shift_JIS-2004.
+    utf32be_to_sjis2004() converts UTF-32BE   to Shift_JIS-2004.
+    unicode_to_sjis2004() converts Unicode[*] to Shift_JIS-2004.
 
-    utf16_to_sjis2003()   converts UTF-16  to Shift_JIS-2003.
-    utf32_to_sjis2003()   converts UTF-32  to Shift_JIS-2003.
+    utf16_to_sjis2004()   converts UTF-16  to Shift_JIS-2004.
+    utf32_to_sjis2004()   converts UTF-32  to Shift_JIS-2004.
 
     sjis0213_to_utf8()    converts Shift_JISX0213 to UTF-8.
     sjis0213_to_utf16le() converts Shift_JISX0213 to UTF-16LE.

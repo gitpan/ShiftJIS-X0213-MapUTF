@@ -75,58 +75,58 @@ for my $ary (@arys) {
     my $utf32_b = pack 'N*', 0xFEFF, @char;
     my $utf32_n = pack 'N*', @char;
 
-    print $unicode eq sjis2003_to_unicode(sub {""}, $sjis)
+    print $unicode eq sjis2004_to_unicode(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $utf8    eq sjis2003_to_utf8(sub {""}, $sjis)
+    print $utf8    eq sjis2004_to_utf8(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $utf16le eq sjis2003_to_utf16le(sub {""}, $sjis)
+    print $utf16le eq sjis2004_to_utf16le(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $utf16be eq sjis2003_to_utf16be(sub {""}, $sjis)
+    print $utf16be eq sjis2004_to_utf16be(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $utf32le eq sjis2003_to_utf32le(sub {""}, $sjis)
+    print $utf32le eq sjis2004_to_utf32le(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $utf32be eq sjis2003_to_utf32be(sub {""}, $sjis)
+    print $utf32be eq sjis2004_to_utf32be(sub {""}, $sjis)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq unicode_to_sjis2003(sub {""}, $unicode)
+    print $sjisre eq unicode_to_sjis2004(sub {""}, $unicode)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf8_to_sjis2003(sub {""}, $utf8)
+    print $sjisre eq utf8_to_sjis2004(sub {""}, $utf8)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf16le_to_sjis2003(sub {""}, $utf16le)
+    print $sjisre eq utf16le_to_sjis2004(sub {""}, $utf16le)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf16be_to_sjis2003(sub {""}, $utf16be)
+    print $sjisre eq utf16be_to_sjis2004(sub {""}, $utf16be)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf32le_to_sjis2003(sub {""}, $utf32le)
+    print $sjisre eq utf32le_to_sjis2004(sub {""}, $utf32le)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf32be_to_sjis2003(sub {""}, $utf32be)
+    print $sjisre eq utf32be_to_sjis2004(sub {""}, $utf32be)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf16_to_sjis2003(sub {""}, $utf16_b)
+    print $sjisre eq utf16_to_sjis2004(sub {""}, $utf16_b)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf16_to_sjis2003(sub {""}, $utf16_l)
+    print $sjisre eq utf16_to_sjis2004(sub {""}, $utf16_l)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf16_to_sjis2003(sub {""}, $utf16_n)
+    print $sjisre eq utf16_to_sjis2004(sub {""}, $utf16_n)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf32_to_sjis2003(sub {""}, $utf32_b)
+    print $sjisre eq utf32_to_sjis2004(sub {""}, $utf32_b)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf32_to_sjis2003(sub {""}, $utf32_l)
+    print $sjisre eq utf32_to_sjis2004(sub {""}, $utf32_l)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-    print $sjisre eq utf32_to_sjis2003(sub {""}, $utf32_n)
+    print $sjisre eq utf32_to_sjis2004(sub {""}, $utf32_n)
 	? "ok" : "not ok" , " ", ++$loaded, "\n";
 }
 
