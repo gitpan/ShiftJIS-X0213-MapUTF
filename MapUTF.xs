@@ -9,22 +9,22 @@
 
 #define PkgName "ShiftJIS::X0213::MapUTF"
 
-#define Is_SJIS0213_SNG(i)   (0x00<=(i) && (i)<=0x7F || 0xA1<=(i) && (i)<=0xDF)
-#define Is_SJIS0213_LED(i)   (0x81<=(i) && (i)<=0x9F || 0xE0<=(i) && (i)<=0xFC)
-#define Is_SJIS0213_TRL(i)   (0x40<=(i) && (i)<=0x7E || 0x80<=(i) && (i)<=0xFC)
+#define Is_SJIS_SNG(i)   (0x00<=(i) && (i)<=0x7F || 0xA1<=(i) && (i)<=0xDF)
+#define Is_SJIS_LED(i)   (0x81<=(i) && (i)<=0x9F || 0xE0<=(i) && (i)<=0xFC)
+#define Is_SJIS_TRL(i)   (0x40<=(i) && (i)<=0x7E || 0x80<=(i) && (i)<=0xFC)
 
-#define Is_SJIS0213_SBC(p)   (Is_SJIS0213_SNG(*(p)))
-#define Is_SJIS0213_DBC(p)   (Is_SJIS0213_LED(*(p)) && Is_SJIS0213_TRL((p)[1]))
-#define Is_SJIS0213_MBLEN(p) (Is_SJIS0213_DBC(p) ? 2 : 1)
-
-#define STMT_ASSIGN_CVREF_AND_SRC				\
-    cvref = NULL;						\
-    if (items == 2)						\
-	if (SvROK(arg1) && SvTYPE(SvRV(arg1)) == SVt_PVCV)	\
-	    cvref = SvRV(arg1);					\
-	else							\
-	    croak(PkgName " 1st argument is not CODEREF");	\
-    src = cvref ? arg2 : arg1;
+#define STMT_ASSIGN_CVREF_AND_SRC(func_name)	\
+    cvref = NULL;				\
+    if (SvROK(ST(0))) {				\
+	if (SvTYPE(SvRV(ST(0))) == SVt_PVCV)	\
+	    cvref = SvRV(ST(0));		\
+	else					\
+	    croak("RV other than CODEREF "	\
+	    "cannot be used in %s", func_name);	\
+    }						\
+    src = cvref					\
+	? (1 < items) ? ST(1) : &PL_sv_undef	\
+	: ST(0);				\
 
 
 #define STMT_ASSIGN_LENDST(maxlen)		\
@@ -35,16 +35,23 @@
     (void)SvPOK_only(dst);
 
 
+#define STMT_GET_MBLEN				\
+    mblen = Is_SJIS_LED(*(p)) && 2 <= (e - p)	\
+	? (Is_SJIS_TRL((p)[1])) ? 2 : 0		\
+	: Is_SJIS_SNG(*(p)) ? 1 : 0;
+
+
 #define STMT_GET_UV_FROM_MB			\
-    mblen = Is_SJIS0213_MBLEN(p);		\
     lb = fmsjis0213_tbl[*p];			\
     uv = lb.tbl ? lb.tbl[p[1]] : lb.sbc;
 
 
-#define STMT_FETCH_FROM_UV(ordStmt)		\
+#define STMT_FETCH_FROM_UV_AND_UV2		\
     j = 0;					\
-    if (isbase(uv) && p < e) {			\
-	uv2 = ordStmt;				\
+    if (p < e && isbase(uv)) {			\
+	uv2 = ix				\
+	    ? ord_uv(p, e - p, &retlen)		\
+	    : utf8n_to_uvuni(p, (e - p), &retlen, 0);	\
 	if (retlen)				\
 	    j = (U16)getcomposite(uv, uv2);	\
 	if (j)					\
@@ -83,25 +90,39 @@ sv_cat_retcvref (SV *dst, SV *cv, SV *sv, bool isbyte)
 	XPUSHs(&PL_sv_undef);
     XPUSHs(sv_2mortal(sv));
     PUTBACK;
-    count = call_sv(cv, G_SCALAR);
+    count = call_sv(cv, (G_EVAL|G_SCALAR));
     SPAGAIN;
-    if (count != 1)
-	croak("Panic in XS, " PkgName "\n");
+    if (SvTRUE(ERRSV) || count != 1) {
+	croak("died in XS, " PkgName "\n");
+    }
     sv_catsv(dst,POPs);
     PUTBACK;
     FREETMPS;
     LEAVE;
 }
 
-static STRLEN maxlen_fm[] = {
-    MaxLenFmU8,
-    MaxLenFmU16,
-    MaxLenFmU16,
-    MaxLenFmU32,
-    MaxLenFmU32,
+static char* funcname_to[] = {
+    "sjis0213_to_unicode",
+    "sjis0213_to_utf8",
+    "sjis0213_to_utf16le",
+    "sjis0213_to_utf16be",
+    "sjis0213_to_utf32le",
+    "sjis0213_to_utf32be",
+};
+
+static char* funcname_fm[] = {
+    "unicode_to_sjis0213",
+    "utf8_to_sjis0213",
+    "utf16le_to_sjis0213",
+    "utf16be_to_sjis0213",
+    "utf32le_to_sjis0213",
+    "utf32be_to_sjis0213",
+    "utf16_to_sjis0213",
+    "utf32_to_sjis0213"
 };
 
 static STRLEN maxlen_to[] = {
+    MaxLenToUni,
     MaxLenToU8,
     MaxLenToU16,
     MaxLenToU16,
@@ -109,7 +130,19 @@ static STRLEN maxlen_to[] = {
     MaxLenToU32,
 };
 
-static STRLEN (*app_uv_in[])(U8 *, UV) = {
+static STRLEN maxlen_fm[] = {
+    MaxLenFmUni,
+    MaxLenFmU8,
+    MaxLenFmU16,
+    MaxLenFmU16,
+    MaxLenFmU32,
+    MaxLenFmU32,
+    MaxLenFmU16,
+    MaxLenFmU32,
+};
+
+static U8* (*app_uv_in[])(U8*, UV) = {
+    NULL,
     app_in_utf8,
     app_in_utf16le,
     app_in_utf16be,
@@ -117,110 +150,74 @@ static STRLEN (*app_uv_in[])(U8 *, UV) = {
     app_in_utf32be,
 };
 
-static STRLEN (*ord_uv_in[])(U8 *, STRLEN, STRLEN *) = {
+static UV (*ord_uv_in[])(U8 *, STRLEN, STRLEN *) = {
+    NULL,
     ord_in_utf8,
     ord_in_utf16le,
     ord_in_utf16be,
     ord_in_utf32le,
     ord_in_utf32be,
+    ord_in_utf16be, /* w/o BOM*/
+    ord_in_utf32be, /* w/o BOM*/
 };
 
 MODULE = ShiftJIS::X0213::MapUTF	PACKAGE = ShiftJIS::X0213::MapUTF
 
+PROTOTYPES: DISABLE
+
 void
-sjis0213_to_unicode (arg1, arg2=0)
-    SV* arg1
-    SV* arg2
-  PROTOTYPE: $;$
+sjis0213_to_unicode (...)
+  ALIAS:
+    sjis0213_to_utf8    = 1
+    sjis0213_to_utf16le = 2
+    sjis0213_to_utf16be = 3
+    sjis0213_to_utf32le = 4
+    sjis0213_to_utf32be = 5
   PREINIT:
     SV *src, *dst, *cvref;
     STRLEN srclen, dstlen, mblen, ulen;
     U8 *s, *e, *p, *d, uni[UTF8_MAXLEN + 1];
     UV uv, u_temp;
     struct leading lb;
+    U8* (*app_uv)(U8*, UV);
   PPCODE:
-    STMT_ASSIGN_CVREF_AND_SRC
-    STMT_ASSIGN_LENDST(MaxLenToUni)
-    SvUTF8_on(dst);
-
-    if (cvref) {
-	for (p = s; p < e; p += mblen) {
-	    STMT_GET_UV_FROM_MB
-	    if (uv || !*p) {
-		if (Is_VALID_UTF(uv)) {
-		    ulen = uvuni_to_utf8(uni, uv) - uni;
-		    sv_catpvn(dst, (char*)uni, ulen);
-		} else {
-		    u_temp = uv >> 16;
-		    ulen = uvuni_to_utf8(uni, u_temp) - uni;
-		    sv_catpvn(dst, (char*)uni, ulen);
-
-		    u_temp = uv & 0xFFFF;
-		    ulen = uvuni_to_utf8(uni, u_temp) - uni;
-		    sv_catpvn(dst, (char*)uni, ulen);
-		}
-	    }
-	    else
-		sv_cat_retcvref(dst, cvref, newSVpvn((char*)p, mblen), FALSE);
-	}
+    STMT_ASSIGN_CVREF_AND_SRC(funcname_to[ix])
+    if (SvUTF8(src)) {
+	src = sv_mortalcopy(src);
+	sv_utf8_downgrade(src, 0);
     }
-    else {
-	d = (U8*)SvPVX(dst);
-	for (p = s; p < e; p += mblen) {
-	    STMT_GET_UV_FROM_MB
-	    if (uv || !*p) {
-		if (Is_VALID_UTF(uv)) {
-		    d = uvuni_to_utf8(d, uv);
-		} else {
-		    d = uvuni_to_utf8(d, (UV)(uv >> 16));
-		    d = uvuni_to_utf8(d, (UV)(uv & 0xFFFF));
-		}
-	    }
-	}
-	*d = '\0';
-	SvCUR_set(dst, d - (U8*)SvPVX(dst));
-    }
-    XPUSHs(dst);
-
-
-void
-sjis0213_to_utf8 (arg1, arg2=0)
-    SV* arg1
-    SV* arg2
-  PROTOTYPE: $;$
-  ALIAS:
-    sjis0213_to_utf16le = 1
-    sjis0213_to_utf16be = 2
-    sjis0213_to_utf32le = 3
-    sjis0213_to_utf32be = 4
-  PREINIT:
-    SV *src, *dst, *cvref;
-    STRLEN srclen, dstlen, mblen, ulen;
-    U8 *s, *e, *p, *d, ucs[5];
-    UV uv, u_temp;
-    struct leading lb;
-    STRLEN (*app_uv)(U8*, UV);
-  PPCODE:
-    STMT_ASSIGN_CVREF_AND_SRC
     STMT_ASSIGN_LENDST(maxlen_to[ix])
+    if (ix == 0)
+	SvUTF8_on(dst);
+
     app_uv = app_uv_in[ix];
 
     if (cvref) {
 	for (p = s; p < e; p += mblen) {
+	    STMT_GET_MBLEN
+	    if (!mblen) {
+		sv_cat_retcvref(dst, cvref, newSVuv((UV)*p), TRUE);
+		p++;
+		continue;
+	    }
 	    STMT_GET_UV_FROM_MB
+
 	    if (uv || !*p) {
 		if (Is_VALID_UTF(uv)) {
-		    ulen = app_uv(ucs, uv);
-		    sv_catpvn(dst, (char*)ucs, ulen);
+		    ulen = ix ? app_uv(uni, uv) - uni
+			      : uvuni_to_utf8(uni, uv) - uni;
+		    sv_catpvn(dst, (char*)uni, ulen);
 		}
-		else if (uv <= 0xFFFFFFFF) {
-		    u_temp = (UV)(uv >> 16);
-		    ulen = app_uv(ucs, u_temp);
-		    sv_catpvn(dst, (char*)ucs, ulen);
+		else if (uv) {
+		    u_temp = (uv >> 16);
+		    ulen = ix ? app_uv(uni, u_temp) - uni
+			      : uvuni_to_utf8(uni, u_temp) - uni;
+		    sv_catpvn(dst, (char*)uni, ulen);
 
-		    u_temp = (UV)(uv & 0xFFFF);
-		    ulen = app_uv(ucs, u_temp);
-		    sv_catpvn(dst, (char*)ucs, ulen);
+		    u_temp = (uv & 0xFFFF);
+		    ulen = ix ? app_uv(uni, u_temp) - uni
+			      : uvuni_to_utf8(uni, u_temp) - uni;
+		    sv_catpvn(dst, (char*)uni, ulen);
 		}
 	    }
 	    else
@@ -230,20 +227,23 @@ sjis0213_to_utf8 (arg1, arg2=0)
     else {
 	d = (U8*)SvPVX(dst);
 	for (p = s; p < e; p += mblen) {
+	    STMT_GET_MBLEN
+	    if (!mblen) {
+		p++;
+		continue;
+	    }
 	    STMT_GET_UV_FROM_MB
+
 	    if (uv || !*p) {
 		if (Is_VALID_UTF(uv)) {
-		    ulen = app_uv(d, uv);
-		    d += ulen;
+		    d = ix ? app_uv(d, uv) : uvuni_to_utf8(d, uv);
 		}
-		else if (uv <= 0xFFFFFFFF) {
-		    u_temp = (UV)(uv >> 16);
-		    ulen = app_uv(d, u_temp);
-		    d += ulen;
+		else {
+		    u_temp = (uv >> 16);
+		    d = ix ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
 
-		    u_temp = (UV)(uv & 0xFFFF);
-		    ulen = app_uv(d, u_temp);
-		    d += ulen;
+		    u_temp = (uv & 0xFFFF);
+		    d = ix ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
 		}
 	    }
 	}
@@ -254,91 +254,60 @@ sjis0213_to_utf8 (arg1, arg2=0)
 
 
 void
-unicode_to_sjis0213 (arg1, arg2=0)
-    SV* arg1
-    SV* arg2
-  PROTOTYPE: $;$
+unicode_to_sjis0213 (...)
+  ALIAS:
+    utf8_to_sjis0213    = 1
+    utf16le_to_sjis0213 = 2
+    utf16be_to_sjis0213 = 3
+    utf32le_to_sjis0213 = 4
+    utf32be_to_sjis0213 = 5
+    utf16_to_sjis0213   = 6
+    utf32_to_sjis0213   = 7
   PREINIT:
     SV *src, *dst, *cvref;
     STRLEN srclen, dstlen, retlen;
     U8 *s, *e, *p, *d, mbc[3];
     U16 j, *tbl_row, **tbl_plain;
     UV uv, uv2;
+    UV (*ord_uv)(U8 *, STRLEN, STRLEN *);
   PPCODE:
-    STMT_ASSIGN_CVREF_AND_SRC
-    if (!SvUTF8(src)) {
+    STMT_ASSIGN_CVREF_AND_SRC(funcname_fm[ix])
+    if (ix == 0 && !SvUTF8(src)) {
 	src = sv_mortalcopy(src);
 	sv_utf8_upgrade(src);
     }
-    STMT_ASSIGN_LENDST(MaxLenFmUni)
-
-    if (cvref) {
-	for (p = s; p < e;) {
-	    uv = utf8n_to_uvuni(p, e - p, &retlen, 0);
-	    p += retlen;
-
-	    STMT_FETCH_FROM_UV(utf8n_to_uvuni(p, e - p, &retlen, 0))
-
-	    if (j || !uv) {
-		if (j >= 256) {
-		    mbc[0] = (U8)(j >> 8);
-		    mbc[1] = (U8)(j & 0xff);
-		    sv_catpvn(dst, (char*)mbc, 2);
-		}
-		else {
-		    mbc[0] = (U8)(j & 0xff);
-		    sv_catpvn(dst, (char*)mbc, 1);
-		}
-	    }
-	    else
-		sv_cat_retcvref(dst, cvref, newSVuv(uv), FALSE);
-	}
+    else if (ix && SvUTF8(src)) {
+	src = sv_mortalcopy(src);
+	sv_utf8_downgrade(src, FALSE);
     }
-    else {
-	d = (U8*)SvPVX(dst);
-	for (p = s; p < e;) {
-	    uv = utf8n_to_uvuni(p, e - p, &retlen, 0);
-	    p += retlen;
-
-	    STMT_FETCH_FROM_UV(utf8n_to_uvuni(p, e - p, &retlen, 0))
-
-	    if (j || !uv) {
-		if (j >= 256)
-		    *d++ = (U8)(j >> 8);
-		*d++ = (U8)(j & 0xff);
-	    }
-	}
-	*d = '\0';
-	SvCUR_set(dst, d - (U8*)SvPVX(dst));
-    }
-    XPUSHs(dst);
-
-
-void
-utf8_to_sjis0213 (arg1, arg2=0)
-    SV* arg1
-    SV* arg2
-  PROTOTYPE: $;$
-  ALIAS:
-    utf16le_to_sjis0213 = 1
-    utf16be_to_sjis0213 = 2
-    utf32le_to_sjis0213 = 3
-    utf32be_to_sjis0213 = 4
-  PREINIT:
-    SV *src, *dst, *cvref;
-    STRLEN srclen, dstlen, retlen;
-    U8 *s, *e, *p, *d, mbc[3];
-    U16 j, *tbl_row, **tbl_plain;
-    UV uv, uv2;
-    STRLEN (*ord_uv)(U8 *, STRLEN, STRLEN *);
-  PPCODE:
-    STMT_ASSIGN_CVREF_AND_SRC
     STMT_ASSIGN_LENDST(maxlen_fm[ix])
+
     ord_uv = ord_uv_in[ix];
 
+    if (ix == 6 && 2 <= e - s) { /* UTF-16 */
+	if (memEQ("\xFF\xFE",s,2)) {
+	    s += 2;
+	    ord_uv = ord_in_utf16le;
+	}
+	else if (memEQ("\xFE\xFF",s,2)) {
+	    s += 2;
+	}
+    }
+    else if (ix == 7 && 4 <= e - s) { /* UTF-32 */
+	if (memEQ("\xFF\xFE\x00\x00",s,4)) {
+	    s += 4;
+	    ord_uv = ord_in_utf32le;
+	}
+	else if (memEQ("\x00\x00\xFE\xFF",s,4)) {
+	    s += 4;
+	}
+    }
+
     if (cvref) {
 	for (p = s; p < e;) {
-	    uv = ord_uv(p, e - p, &retlen);
+	    uv = ix
+		? ord_uv(p, e - p, &retlen)
+		: utf8n_to_uvuni(p, (e - p), &retlen, 0);
 
 	    if (retlen)
 		p += retlen;
@@ -348,7 +317,7 @@ utf8_to_sjis0213 (arg1, arg2=0)
 		continue;
 	    }
 
-	    STMT_FETCH_FROM_UV(ord_uv(p, e - p, &retlen))
+	    STMT_FETCH_FROM_UV_AND_UV2
 
 	    if (j || !uv) {
 		if (j >= 256) {
@@ -364,11 +333,14 @@ utf8_to_sjis0213 (arg1, arg2=0)
 	    else
 		sv_cat_retcvref(dst, cvref, newSVuv(uv), FALSE);
 	}
-    } else {
+    }
+    else {
 	d = (U8*)SvPVX(dst);
 
 	for (p = s; p < e;) {
-	    uv = ord_uv(p, e - p, &retlen);
+	    uv = ix
+		? ord_uv(p, e - p, &retlen)
+		: utf8n_to_uvuni(p, (e - p), &retlen, 0);
 
 	    if (retlen)
 		p += retlen;
@@ -377,7 +349,7 @@ utf8_to_sjis0213 (arg1, arg2=0)
 		continue;
 	    }
 
-	    STMT_FETCH_FROM_UV(ord_uv(p, e - p, &retlen));
+	    STMT_FETCH_FROM_UV_AND_UV2
 
 	    if (j || !uv) {
 		if (j >= 256)

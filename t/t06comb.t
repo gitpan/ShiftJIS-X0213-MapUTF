@@ -3,14 +3,15 @@ BEGIN { $| = 1; print "1..19\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use ShiftJIS::X0213::MapUTF qw(:all);
-$loaded = 1;
+
+use strict;
+$^W = 1;
+our $loaded = 1;
 print "ok 1\n";
 
-my $repeat = 1000;
+our $repeat = 1000;
 
 # SJIS 1 char from Unicode 2 chars
-
-my $hasUnicode = defined &sjis0213_to_unicode;
 
 sub hexNCR { sprintf "&#x%04x;", shift }
 

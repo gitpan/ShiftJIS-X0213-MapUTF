@@ -10,7 +10,7 @@ require Exporter;
 @EXPORT = qw(to_sjis0213_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
@@ -77,8 +77,10 @@ ShiftJIS::X0213::MapUTF::Supplements - Supplemental Mapping from Unicode to Shif
   use ShiftJIS::X0213::MapUTF::Supplements;
 
   $sjis_str = utf8_to_sjis0213   (\&to_sjis0213_supplements, $utf8_str);
+  $sjis_str = utf16_to_sjis0213  (\&to_sjis0213_supplements, $utf16_str);
   $sjis_str = utf16le_to_sjis0213(\&to_sjis0213_supplements, $utf16le_str);
   $sjis_str = utf16be_to_sjis0213(\&to_sjis0213_supplements, $utf16be_str);
+  $sjis_str = utf32_to_sjis0213  (\&to_sjis0213_supplements, $utf32_str);
   $sjis_str = utf32le_to_sjis0213(\&to_sjis0213_supplements, $utf32le_str);
   $sjis_str = utf32be_to_sjis0213(\&to_sjis0213_supplements, $utf32be_str);
   $sjis_str = unicode_to_sjis0213(\&to_sjis0213_supplements, $unicode_str);
@@ -110,12 +112,11 @@ may be added, modified, or removed in future.
 
 =head1 AUTHOR
 
-Tomoyuki SADAHIRO
+SADAHIRO Tomoyuki <bqw10602@nifty.com>
 
-  bqw10602@nifty.com
   http://homepage1.nifty.com/nomenclator/perl/
 
-  Copyright(C) 2002-2002, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2003, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.

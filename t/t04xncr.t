@@ -1,14 +1,15 @@
 
-BEGIN { $| = 1; print "1..25\n"; }
+BEGIN { $| = 1; print "1..41\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use ShiftJIS::X0213::MapUTF qw(:all);
-$loaded = 1;
+
+use strict;
+$^W = 1;
+our $loaded = 1;
 print "ok 1\n";
 
 my $repeat = 1000;
-
-my $hasUnicode = defined &sjis0213_to_unicode;
 
 sub hexNCR {
     my ($char, $byte) = @_;
@@ -18,34 +19,34 @@ sub hexNCR {
 
 #####
 
-print "&#x10000;abc&#x12345;xyz&#x10ffff;" eq utf16le_to_sjis0213(\&hexNCR,
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq utf16le_to_sjis0213(\&hexNCR,
 	"\x00\xd8\x00\xdc\x61\x00\x62\x00\x63\x00"
-	    . "\x08\xD8\x45\xDF\x78\x00\x79\x00\x7a\x00\xff\xdb\xff\xdf")
+	    . "\x08\xD8\x45\xDF\x78\x00\x79\x00\x7a\x00\xff\xdb\xfc\xdf")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "&#x10000;abc&#x12345;xyz&#x10ffff;" eq utf16be_to_sjis0213(\&hexNCR,
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq utf16be_to_sjis0213(\&hexNCR,
 	"\xd8\x00\xdc\x00\x00\x61\x00\x62\x00\x63"
-	    . "\xD8\x08\xDF\x45\x00\x78\x00\x79\x00\x7a\xdb\xff\xdf\xff")
+	    . "\xD8\x08\xDF\x45\x00\x78\x00\x79\x00\x7a\xdb\xff\xdf\xfc")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "&#x10000;abc&#x12345;xyz&#x10ffff;" eq utf32le_to_sjis0213(\&hexNCR,
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq utf32le_to_sjis0213(\&hexNCR,
 	    "\x00\x00\x01\x00\x61\0\0\0\x62\0\0\0\x63\0\0\0\x45\x23\x01\x00" .
-	    "\x78\0\0\0\x79\0\0\0\x7a\0\0\0\xff\xff\x10\x00")
+	    "\x78\0\0\0\x79\0\0\0\x7a\0\0\0\xfc\xff\x10\x00")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "&#x10000;abc&#x12345;xyz&#x10ffff;" eq utf32be_to_sjis0213(\&hexNCR,
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq utf32be_to_sjis0213(\&hexNCR,
 	    "\x00\x01\x00\x00\0\0\0\x61\0\0\0\x62\0\0\0\x63\x00\x01\x23\x45" .
-	    "\0\0\0\x78\0\0\0\x79\0\0\0\x7a\x00\x10\xff\xff")
+	    "\0\0\0\x78\0\0\0\x79\0\0\0\x7a\x00\x10\xff\xfc")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print !$hasUnicode || "&#x10000;abc&#x12345;xyz&#x10ffff;" eq
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq
 	unicode_to_sjis0213(\&hexNCR,  pack 'U*', 0x10000, 0x61, 0x62, 0x63,
-	    0x12345, 0x78, 0x79, 0x7a, 0x10ffff)
+	    0x12345, 0x78, 0x79, 0x7a, 0x10fffc)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print "&#x10000;abc&#x12345;xyz&#x10ffff;" eq
+print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq
 	utf8_to_sjis0213(\&hexNCR, "\xF0\x90\x80\x80\x61\x62\x63" .
-	    "\xF0\x92\x8D\x85\x78\x79\x7A\xF4\x8F\xBF\xBF")
+	    "\xF0\x92\x8D\x85\x78\x79\x7A\xF4\x8F\xBF\xBC")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
 #####
@@ -78,8 +79,7 @@ print "\x85\x94&#xb5;\x81\x93&#x2acde;\x83\xbf&#xacde;" x $repeat eq
 		x $repeat)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print !$hasUnicode
-	    || "\x85\x94&#xb5;\x81\x93&#x2acde;\x83\xbf&#xacde;" x $repeat eq
+print "\x85\x94&#xb5;\x81\x93&#x2acde;\x83\xbf&#xacde;" x $repeat eq
 	unicode_to_sjis0213(\&hexNCR,
 	    pack('U*', 0xff, 0xb5, 0xff05, 0x2acde, 0x3B1, 0xacde) x $repeat)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
@@ -106,7 +106,7 @@ print "ABCD" eq utf8_to_sjis0213(
 	"\x41\xF3\xA0\x80\x81\x42\xF4\x8A\xAF\x8D\x43\xF0\x90\x80\x80\x44")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print !$hasUnicode || "ABCD" eq unicode_to_sjis0213(
+print "ABCD" eq unicode_to_sjis0213(
 	"A".chr(0xE0001)."B".chr(0x10ABCD)."C".chr(0x10000)."D")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
@@ -141,8 +141,84 @@ print "A&#xE0001;B&#x10ABCD;C&#x10000;D" eq
 	    "\x41\xF3\xA0\x80\x81\x42\xF4\x8A\xAF\x8D\x43\xF0\x90\x80\x80\x44")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 
-print !$hasUnicode || "A&#xE0001;B&#x10ABCD;C&#x10000;D" eq
+print "A&#xE0001;B&#x10ABCD;C&#x10000;D" eq
 	unicode_to_sjis0213(sub { sprintf "&#x%04X;", shift },
 	    "A".chr(0xE0001)."B".chr(0x10ABCD)."C".chr(0x10000)."D")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+##### 26..37
+
+print "&#xfffe;&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf16be_to_sjis0213(\&hexNCR,
+	    "\xff\xfe\xff\xff\xfe\xfe\xfe\xff\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xfffe;&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf16le_to_sjis0213(\&hexNCR,
+	    "\xfe\xff\xff\xff\xfe\xfe\xff\xfe\xfe\xff")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfffe;&#xfeff;" eq
+	utf16_to_sjis0213(\&hexNCR,
+	    "\xff\xfe\xff\xff\xfe\xfe\xfe\xff\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf16_to_sjis0213(\&hexNCR,
+	    "\xfe\xff\xff\xff\xfe\xfe\xfe\xff\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf16_to_sjis0213(\&hexNCR,
+	    "\xff\xff\xfe\xfe\xfe\xff\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xfffe;&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32be_to_sjis0213(\&hexNCR,
+	    "\0\0\xff\xfe\0\0\xff\xff\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xfffe;&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32le_to_sjis0213(\&hexNCR,
+	    "\xfe\xff\0\0\xff\xff\0\0\xfe\xfe\0\0\xff\xfe\0\0\xfe\xff\0\0")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfffe;&#xfeff;" eq
+	utf32_to_sjis0213(\&hexNCR,
+	    "\xff\xfe\0\0\xff\xff\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe\0\0")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32_to_sjis0213(\&hexNCR,
+	    "\0\0\xfe\xff\0\0\xff\xff\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xffff;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32_to_sjis0213(\&hexNCR,
+	    "\0\0\xff\xff\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xfffe;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32_to_sjis0213(\&hexNCR,
+	    "\0\0\xff\xfe\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "&#xfefe;&#xfefe;&#xfeff;&#xfffe;" eq
+	utf32_to_sjis0213(\&hexNCR,
+	    "\0\0\xfe\xfe\0\0\xfe\xfe\0\0\xfe\xff\0\0\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+##### 38..41
+
+print "" eq utf16_to_sjis0213(\&hexNCR, "\xfe\xff")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "" eq utf16_to_sjis0213(\&hexNCR, "\xff\xfe")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "" eq utf32_to_sjis0213(\&hexNCR, "\0\0\xfe\xff")
+    ? "ok" : "not ok" , " ", ++$loaded, "\n";
+
+print "" eq utf32_to_sjis0213(\&hexNCR, "\xff\xfe\0\0")
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

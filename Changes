@@ -1,5 +1,16 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.12  Sat Oct 11 22:35:36 2003
+    - manipulation of illegal ShiftJIS strings: SJIS_CALLBACK coderef are
+      called with two parameters (like UNICODE_CODEREF).
+    - Reserved bytes (0x80, 0xA0, 0xFD..0xFF) are no longer
+      a single-byte character.
+    - Internal tweak in XSUB: no longer relies on a string to be
+      terminated with '\0'.
+    - added utf16_to_sjis0213() and utf32_to_sjis0213().
+      [but not yet sjis0213_to_utf16() and sjis0213_to_utf32()]
+    - modified t04xncr.t avoiding a non-character.
+
 0.11  Sun Nov 03 19:32:21 2002
     - fix a momery leak when the process died in a callback.
       like: eval { utf32be_to_sjis0213(sub { die }, "\x00"); };

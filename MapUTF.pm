@@ -7,9 +7,11 @@ use vars qw($VERSION $PACKAGE @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 require Exporter;
 require DynaLoader;
-require AutoLoader;
 
 @ISA = qw(Exporter DynaLoader);
+
+$VERSION = '0.12';
+$PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 @EXPORT = qw(
     sjis0213_to_unicode  unicode_to_sjis0213
@@ -21,18 +23,16 @@ require AutoLoader;
 %EXPORT_TAGS = (
     'unicode'  => [ 'sjis0213_to_unicode', 'unicode_to_sjis0213' ],
     'utf8'     => [ 'sjis0213_to_utf8',    'utf8_to_sjis0213'    ],
+    'utf16'    => [                        'utf16_to_sjis0213'   ],
     'utf16le'  => [ 'sjis0213_to_utf16le', 'utf16le_to_sjis0213' ],
     'utf16be'  => [ 'sjis0213_to_utf16be', 'utf16be_to_sjis0213' ],
+    'utf32'    => [                        'utf32_to_sjis0213'   ],
     'utf32le'  => [ 'sjis0213_to_utf32le', 'utf32le_to_sjis0213' ],
     'utf32be'  => [ 'sjis0213_to_utf32be', 'utf32be_to_sjis0213' ],
 );
 
 @EXPORT_OK = map @$_, values %EXPORT_TAGS;
 $EXPORT_TAGS{all}  = [ @EXPORT_OK ];
-
-$VERSION = '0.11';
-
-$PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 bootstrap ShiftJIS::X0213::MapUTF $VERSION;
 
@@ -55,34 +55,61 @@ ShiftJIS::X0213::MapUTF - conversion between Shift_JISX0213 and Unicode
 This module provides some functions to map
 from Shift_JISX0213 to Unicode, and vice versa.
 
-=head2 Functions to transcode Shift_JISX0213 to Unicode
+=head2 Conversion from Shift_JISX0213 to Unicode
 
-If a coderef C<SJIS_CALLBACK> is not specified,
-characters unmapped to Unicode are deleted;
-otherwise, a string returned from C<SJIS_CALLBACK> is inserted there.
-The argument for B<SJIS_CALLBACK> is a Shift_JISX0213 string like
-C<"\x80">, C<"\xfc\xfc">, C<"\xff">
-(that may be a byte that is illegal or a partial charcter).
+If the first parameter is a reference,
+that is used for coping with Shift_JISX0213 characters
+unmapped to Unicode, C<SJIS_CALLBACK>.
+(any reference will not allowed as C<STRING>.)
 
-The return value of B<SJIS_CALLBACK> must be legal in the target format.
-E.g. it must be silly to use with sjis0213_to_utf16be()
-a callback that returns UTF-8.
-I.e. you should prepare a callback coderef for each encoding.
+If C<SJIS_CALLBACK> is given, C<STRING> is
+the second parameter; otherwise the first.
+
+If C<SJIS_CALLBACK> is not specified,
+Shift_JISX0213 characters unmapped to Unicode are silently deleted
+and illegal bytes are skipped by one byte.
+(as if a coderef constantly returning null string, C<sub {''}>,
+is passed as C<SJIS_CALLBACK>.)
+
+Currently, only coderefs are allowed as C<SJIS_CALLBACK>.
+A string returned from C<SJIS_CALLBACK> is inserted
+in place of the unmapped character or the illegal byte.
+
+A coderef as C<SJIS_CALLBACK> is called with one or more arguments.
+
+If illegal byte appears (i.e. a leading byte C<[0x81..0x9F, 0xE0..0xFC]>
+without trailing byte (C<[0x40..0x7E, 0x80..0xFC]>), or a reserved byte
+(C<[0x80, 0xA0, 0xF0..0xFF]>), the first argument is C<undef>
+and the second argument is an unsigned integer representing the byte.
+
+If an unmapped character appears, the first argument is
+a defined string representing a character.
+
+Example
+
+    my $sjis_callback = sub {
+        my ($char, $byte) = @_;
+        return function($char) if defined $char;
+        die sprintf "illegal byte 0x%02x", $byte;
+    };
+
+In the example above, C<$char> may be C<"\xfc\xfc">, etc.
+
+The return value of C<SJIS_CALLBACK> must be legal in the target format.
+E.g. never use with C<sjis0213_to_utf16be()> a callback that returns UTF-8.
+I.e. you should prepare C<SJIS_CALLBACK> for each UTF.
 
 =over 4
 
-=item C<sjis0213_to_utf8(STRING)>
-
-=item C<sjis0213_to_utf8(SJIS_CALLBACK, STRING)>
+=item C<sjis0213_to_utf8([SJIS_CALLBACK,] STRING)>
 
 Converts Shift_JISX0213 to UTF-8
 
-=item C<sjis0213_to_unicode(STRING)>
-
-=item C<sjis0213_to_unicode(SJIS_CALLBACK, STRING)>
+=item C<sjis0213_to_unicode([SJIS_CALLBACK,] STRING)>
 
 Converts Shift_JISX0213 to Unicode
-(Perl's internal format (see perlunicode), flagged).
+(Perl's internal format, flagged with C<SVf_UTF8>,
+see F<perlunicode>)
 
 =item C<sjis0213_to_utf16le([SJIS_CALLBACK,] STRING)>
 
@@ -102,47 +129,65 @@ Converts Shift_JISX0213 to UTF-32BE.
 
 =back
 
-=head2 Functions to transcode Shift_JISX0213 from Unicode
+=head2 Conversion from Unicode to Shift_JISX0213
 
-If the C<UNICODE_CALLBACK> coderef is not specified,
-illegal bytes are skipped by one byte,
-and characters unmapped to Shift_JISX0213 are deleted;
-otherwise, a string returned from C<UNICODE_CALLBACK> is inserted there.
+If the first parameter is a reference,
+that is used for coping with Unicode characters
+unmapped to Shift_JISX0213, C<UNICODE_CALLBACK>.
+(any reference will not allowed as C<STRING>.)
 
-The 1st argument for B<UNICODE_CALLBACK> is its Unicode codepoint (integer),
-or B<undef> when encounters an illegal byte.
+If C<UNICODE_CALLBACK> is given, C<STRING> is
+the second parameter; otherwise the first.
 
-If the 1st argument is B<undef>, integer in byte is passed as the 2nd argument.
- 
+If C<UNICODE_CALLBACK> is not specified,
+Shift_JIS characters unmapped to Unicode are silently deleted
+and partial bytes are skipped by one byte.
+(as if a coderef constantly returning null string, C<sub {''}>
+is passed as C<UNICODE_CALLBACK>.)
+
+Currently, only coderefs are allowed as C<UNICODE_CALLBACK>.
+A string returned from the coderef is inserted
+in place of the unmapped character.
+
+A coderef as C<UNICODE_CALLBACK> is called with one or more arguments.
+If the unmapped character is a partial character (an illegal byte),
+the first argument is C<undef>
+and the second argument is an unsigned integer representing the byte.
+If not partial, the first argument is an unsigned interger
+representing a Unicode code point.
+
 For example, characters unmapped to Shift_JISX0213 are
 converted to numerical character references for HTML 4.01.
 
     sub toHexNCR {
         my ($char, $byte) = @_;
         return sprintf("&#x%x;", $char) if defined $char;
-        die sprintf "illegal byte 0x%02x was found", $byte;
+        die sprintf "illegal byte 0x%02x", $byte;
     }
 
-    $sjis0213 = utf8_to_sjis0213(\&toHexNCR, $utf8_string);
+    $sjis0213 = utf8_to_sjis0213   (\&toHexNCR, $utf8_string);
     $sjis0213 = unicode_to_sjis0213(\&toHexNCR, $unicode_string);
     $sjis0213 = utf16le_to_sjis0213(\&toHexNCR, $utf16le_string);
 
+The return value of C<UNICODE_CALLBACK> must be legal in Shift_JISX0213.
+
 =over 4
 
-=item C<utf8_to_sjis0213(STRING)>
-
-=item C<utf8_to_sjis0213(UNICODE_CALLBACK, STRING)>
+=item C<utf8_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
 Converts UTF-8 to Shift_JISX0213.
 
-=item C<unicode_to_sjis0213(STRING)>
-
-=item C<unicode_to_sjis0213(UNICODE_CALLBACK, STRING)>
+=item C<unicode_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
 Converts Unicode to Shift_JISX0213.
 
-This B<Unicode> is in the Perl's internal format (see perlunicode).
-If not flagged with C<SVf_UTF8>, upgraded as an ISO 8859-1 string).
+This B<Unicode> is in the Perl's internal format (see F<perlunicode>).
+If C<SVf_UTF8> is not turned on,
+C<STRING> is upgraded as an ISO 8859-1 (latin1) string.
+
+=item C<utf16_to_sjis0213([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-16 (with or w/o C<BOM>) to Shift_JISX0213.
 
 =item C<utf16le_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
@@ -151,6 +196,10 @@ Converts UTF-16LE to Shift_JISX0213.
 =item C<utf16be_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
 Converts UTF-16BE to Shift_JISX0213.
+
+=item C<utf32_to_sjis0213([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-32 (with or w/o C<BOM>) to Shift_JISX0213.
 
 =item C<utf32le_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
@@ -175,6 +224,13 @@ B<On request:>
 
     sjis0213_to_utf32le  utf32le_to_sjis0213
     sjis0213_to_utf32be  utf32be_to_sjis0213
+                         utf16_to_sjis0213 [*]
+                         utf32_to_sjis0213 [*]
+
+[*] Their counterparts C<sjis0213_to_utf16()> and C<sjis0213_to_utf32()>
+are not implemented yet. They need more investigation
+on return values from C<SJIS_CALLBACK>...
+(concatenation needs recognition of and coping with C<BOM>)
 
 =head1 BUGS
 
@@ -241,12 +297,11 @@ to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS <0x8663>.)
 
 =head1 AUTHOR
 
-Tomoyuki SADAHIRO
+SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-  bqw10602@nifty.com
   http://homepage1.nifty.com/nomenclator/perl/
 
-  Copyright(C) 2002-2002, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2003, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.

@@ -1,4 +1,4 @@
-ShiftJIS::X0213::MapUTF version 0.11
+ShiftJIS::X0213::MapUTF version 0.12
 ================
 
 NAME
@@ -23,19 +23,24 @@ This module provides the following functions:
     sjis0213_to_utf32be() converts Shift_JISX0213 to UTF-32BE (big endian).
     sjis0213_to_unicode() converts Shift_JISX0213 to Unicode[*].
 
-    utf8_to_sjis0213()    converts UTF-8  to Shift_JISX0213.
+    utf8_to_sjis0213()    converts UTF-8    to Shift_JISX0213.
     utf16le_to_sjis0213() converts UTF-16LE to Shift_JISX0213.
     utf16be_to_sjis0213() converts UTF-16BE to Shift_JISX0213.
     utf32le_to_sjis0213() converts UTF-32LE to Shift_JISX0213.
     utf32be_to_sjis0213() converts UTF-32BE to Shift_JISX0213.
     unicode_to_sjis0213() converts Unicode[*] to Shift_JISX0213.
 
-    [*] .. Perl's internal format. see perlunicode.pod in Perl 5.6 or later.
+    utf16_to_sjis0213()   converts UTF-16   to Shift_JISX0213.
+    utf32_to_sjis0213()   converts UTF-32   to Shift_JISX0213.
 
-DEPENDENCIES AND INSTALLATION
+    [*] .. Perl's internal format. see perlunicode.pod.
+
+DEPENDENCIES
 
 This module requires Perl 5.6.1 or later.
 (sorry, cannot be built with Perl 5.6.0!)
+
+INSTALLATION
 
 You need a C compiler to build this module.
 To install this module type the following:
@@ -47,12 +52,11 @@ To install this module type the following:
 
 COPYRIGHT AND LICENCE
 
-    Tomoyuki SADAHIRO
+SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-        bqw10602@nifty.com
-        http://homepage1.nifty.com/nomenclator/perl/
+    http://homepage1.nifty.com/nomenclator/perl/
 
-    Copyright(C) 2002-2002, SADAHIRO Tomoyuki. Japan. All rights reserved.
+    Copyright(C) 2002-2003, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
     This module is free software; you can redistribute it
     and/or modify it under the same terms as Perl itself.
