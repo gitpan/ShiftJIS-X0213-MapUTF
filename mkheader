@@ -14,9 +14,10 @@ my $mc = 'U16';
 my $wc = 'UV';
 
 my(%sbcs, %dbcs, %ucs, %maxlen);
-use vars qw(%SJIS0213_UNI %UNI_SJIS0213);
+use vars qw(%SJIS0213_UNI %UNI_SJIS0213 @ADDED2004);
 
-sub splitcomp { $_[0] <= 0x10FFFF ? $_[0] : ($_[0] >> 16, $_[0] & 0xFFFF) }
+sub UNICODE_MAX () { 0x10FFFF }
+sub splitcomp { $_[0] <= UNICODE_MAX ? $_[0] : ($_[0] >> 16, $_[0] & 0xFFFF) }
 
 sub _u8len {
     my $uv = shift;
@@ -30,8 +31,9 @@ sub u8len {
     $len += _u8len($_) for @uv;
     return $len;
 }
+
 sub u16len { ($_[0] > 0xFFFF)   ? 4 : 2 }
-sub u32len { ($_[0] > 0x10FFFF) ? 8 : 4 }
+sub u32len { ($_[0] > UNICODE_MAX) ? 8 : 4 }
 sub unilen { scalar @{ [ unpack 'C*', pack 'U*', splitcomp(shift) ] } }
 sub floor  { int($_[0]) + ($_[0] <=> int($_[0])); }
 
@@ -69,6 +71,17 @@ printf "#define MaxLenToU8  (%d)\n", $maxlen{ToU8 };
 printf "#define MaxLenToU16 (%d)\n", $maxlen{ToU16};
 printf "#define MaxLenToU32 (%d)\n", $maxlen{ToU32};
 print "\n";
+
+print "bool isADDED2004 (UV uv)\n{\nreturn\n\t";
+{
+    my @temp = sort { $a <=> $b } @ADDED2004;
+    while (@temp) {
+	my $cur = shift @temp;
+	printf "uv == 0x%04X", $cur;
+	print "  ||\n\t" if @temp;
+    }
+    print "\n\t? TRUE : FALSE;\n}\n\n";
+}
 
 print "struct leading { $wc sbc; $wc* tbl; };\n\n";
 
@@ -132,7 +145,7 @@ print "\n";
     my (%val, %bases, %composites);
 
     foreach my $uv (keys %$hash) {
-	if ($uv > 0x10FFFF) {
+	if ($uv > UNICODE_MAX) {
 	    my $b = $uv >> 16;
 	    my $c = $uv & 0xFFFF;
 	    push @{ $composites{$c} }, [ $b, $hash->{$uv} ];

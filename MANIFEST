@@ -8,13 +8,27 @@ MapUTF/Supplements.pm
 mkheader
 sjis0213.map
 sxmuni.h
-t/t01simp.t
-t/t02null.t
-t/t03byte.t
-t/t04xncr.t
-t/t05surr.t
-t/t06comb.t
-t/t07supl.t
-t/t08illeg.t
-t/t09illfb.t
-t/t10heavy.t
+t/s01simp.t	tests for sjis2003
+t/s02null.t	tests for sjis2003
+t/s03byte.t	tests for sjis2003
+t/s04xncr.t	tests for sjis2003
+t/s05surr.t	tests for sjis2003
+t/s06comb.t	tests for sjis2003
+t/s07supl.t	tests for sjis2003
+t/s08illeg.t	tests for sjis2003
+t/s09illfb.t	tests for sjis2003
+t/s10heavy.t	tests for sjis2003
+t/s11grade.t	tests for sjis2003
+t/s12trail.t	tests for sjis2003
+t/t01simp.t	tests for sjis0213
+t/t02null.t	tests for sjis0213
+t/t03byte.t	tests for sjis0213
+t/t04xncr.t	tests for sjis0213
+t/t05surr.t	tests for sjis0213
+t/t06comb.t	tests for sjis0213
+t/t07supl.t	tests for sjis0213
+t/t08illeg.t	tests for sjis0213
+t/t09illfb.t	tests for sjis0213
+t/t10heavy.t	tests for sjis0213
+t/t11grade.t	tests for sjis0213
+t/t12trail.t	tests for sjis0213

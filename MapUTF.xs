@@ -43,13 +43,15 @@
 
 #define STMT_GET_UV_FROM_MB			\
     lb = fmsjis0213_tbl[*p];			\
-    uv = lb.tbl ? lb.tbl[p[1]] : lb.sbc;
+    uv = lb.tbl ? lb.tbl[p[1]] : lb.sbc;	\
+    if (!use2004 && isADDED2004(uv))		\
+	uv = 0;
 
 
 #define STMT_FETCH_FROM_UV_AND_UV2		\
     j = 0;					\
     if (p < e && isbase(uv)) {			\
-	uv2 = ix				\
+	uv2 = id_utf				\
 	    ? ord_uv(p, e - p, &retlen)		\
 	    : utf8n_to_uvuni(p, (e - p), &retlen, 0);	\
 	if (retlen)				\
@@ -57,7 +59,9 @@
 	if (j)					\
 	    p += retlen;			\
     }						\
-    if (!j) {					\
+    if (!use2004 && isADDED2004(uv))		\
+	j = 0;					\
+    else if (!j) {				\
         tbl_plain = Is_VALID_UTF(uv)		\
 	    ? tosjis0213_tbl[uv >> 16]		\
 	    : NULL;				\
@@ -101,7 +105,16 @@ sv_cat_retcvref (SV *dst, SV *cv, SV *sv, bool isbyte)
     LEAVE;
 }
 
-static char* funcname_to[] = {
+#define NUM_toUTF    (6)
+#define NUM_fromUTF  (8)
+
+static char* funcname_to[2 * NUM_toUTF] = {
+    "sjis2003_to_unicode",
+    "sjis2003_to_utf8",
+    "sjis2003_to_utf16le",
+    "sjis2003_to_utf16be",
+    "sjis2003_to_utf32le",
+    "sjis2003_to_utf32be",
     "sjis0213_to_unicode",
     "sjis0213_to_utf8",
     "sjis0213_to_utf16le",
@@ -110,18 +123,26 @@ static char* funcname_to[] = {
     "sjis0213_to_utf32be",
 };
 
-static char* funcname_fm[] = {
+static char* funcname_fm[2 * NUM_fromUTF] = {
+    "unicode_to_sjis2003",
+       "utf8_to_sjis2003",
+    "utf16le_to_sjis2003",
+    "utf16be_to_sjis2003",
+    "utf32le_to_sjis2003",
+    "utf32be_to_sjis2003",
+      "utf16_to_sjis2003",
+      "utf32_to_sjis2003",
     "unicode_to_sjis0213",
-    "utf8_to_sjis0213",
+       "utf8_to_sjis0213",
     "utf16le_to_sjis0213",
     "utf16be_to_sjis0213",
     "utf32le_to_sjis0213",
     "utf32be_to_sjis0213",
-    "utf16_to_sjis0213",
-    "utf32_to_sjis0213"
+      "utf16_to_sjis0213",
+      "utf32_to_sjis0213",
 };
 
-static STRLEN maxlen_to[] = {
+static STRLEN maxlen_to[NUM_toUTF] = {
     MaxLenToUni,
     MaxLenToU8,
     MaxLenToU16,
@@ -130,7 +151,7 @@ static STRLEN maxlen_to[] = {
     MaxLenToU32,
 };
 
-static STRLEN maxlen_fm[] = {
+static STRLEN maxlen_fm[NUM_fromUTF] = {
     MaxLenFmUni,
     MaxLenFmU8,
     MaxLenFmU16,
@@ -141,7 +162,7 @@ static STRLEN maxlen_fm[] = {
     MaxLenFmU32,
 };
 
-static U8* (*app_uv_in[])(U8*, UV) = {
+static U8* (*app_uv_in[NUM_toUTF])(U8*, UV) = {
     NULL,
     app_in_utf8,
     app_in_utf16le,
@@ -150,7 +171,7 @@ static U8* (*app_uv_in[])(U8*, UV) = {
     app_in_utf32be,
 };
 
-static UV (*ord_uv_in[])(U8 *, STRLEN, STRLEN *) = {
+static UV (*ord_uv_in[NUM_fromUTF])(U8 *, STRLEN, STRLEN *) = {
     NULL,
     ord_in_utf8,
     ord_in_utf16le,
@@ -166,13 +187,19 @@ MODULE = ShiftJIS::X0213::MapUTF	PACKAGE = ShiftJIS::X0213::MapUTF
 PROTOTYPES: DISABLE
 
 void
-sjis0213_to_unicode (...)
+sjis2003_to_unicode (...)
   ALIAS:
-    sjis0213_to_utf8    = 1
-    sjis0213_to_utf16le = 2
-    sjis0213_to_utf16be = 3
-    sjis0213_to_utf32le = 4
-    sjis0213_to_utf32be = 5
+    sjis2003_to_utf8    = 1
+    sjis2003_to_utf16le = 2
+    sjis2003_to_utf16be = 3
+    sjis2003_to_utf32le = 4
+    sjis2003_to_utf32be = 5
+    sjis0213_to_unicode = 6
+    sjis0213_to_utf8    = 7
+    sjis0213_to_utf16le = 8
+    sjis0213_to_utf16be = 9
+    sjis0213_to_utf32le = 10
+    sjis0213_to_utf32be = 11
   PREINIT:
     SV *src, *dst, *cvref;
     STRLEN srclen, dstlen, mblen, ulen;
@@ -180,17 +207,21 @@ sjis0213_to_unicode (...)
     UV uv, u_temp;
     struct leading lb;
     U8* (*app_uv)(U8*, UV);
+    int  id_utf, use2004;
   PPCODE:
+    use2004 = ix < NUM_toUTF;
+    id_utf  = ix % NUM_toUTF;
+
     STMT_ASSIGN_CVREF_AND_SRC(funcname_to[ix])
     if (SvUTF8(src)) {
 	src = sv_mortalcopy(src);
 	sv_utf8_downgrade(src, 0);
     }
-    STMT_ASSIGN_LENDST(maxlen_to[ix])
-    if (ix == 0)
+    STMT_ASSIGN_LENDST(maxlen_to[id_utf])
+    if (id_utf == 0)
 	SvUTF8_on(dst);
 
-    app_uv = app_uv_in[ix];
+    app_uv = app_uv_in[id_utf];
 
     if (cvref) {
 	for (p = s; p < e; p += mblen) {
@@ -204,19 +235,19 @@ sjis0213_to_unicode (...)
 
 	    if (uv || !*p) {
 		if (Is_VALID_UTF(uv)) {
-		    ulen = ix ? app_uv(uni, uv) - uni
-			      : uvuni_to_utf8(uni, uv) - uni;
+		    ulen = id_utf ? app_uv(uni, uv) - uni
+				  : uvuni_to_utf8(uni, uv) - uni;
 		    sv_catpvn(dst, (char*)uni, ulen);
 		}
-		else if (uv) {
+		else {
 		    u_temp = (uv >> 16);
-		    ulen = ix ? app_uv(uni, u_temp) - uni
-			      : uvuni_to_utf8(uni, u_temp) - uni;
+		    ulen = id_utf ? app_uv(uni, u_temp) - uni
+				  : uvuni_to_utf8(uni, u_temp) - uni;
 		    sv_catpvn(dst, (char*)uni, ulen);
 
 		    u_temp = (uv & 0xFFFF);
-		    ulen = ix ? app_uv(uni, u_temp) - uni
-			      : uvuni_to_utf8(uni, u_temp) - uni;
+		    ulen = id_utf ? app_uv(uni, u_temp) - uni
+				  : uvuni_to_utf8(uni, u_temp) - uni;
 		    sv_catpvn(dst, (char*)uni, ulen);
 		}
 	    }
@@ -236,14 +267,14 @@ sjis0213_to_unicode (...)
 
 	    if (uv || !*p) {
 		if (Is_VALID_UTF(uv)) {
-		    d = ix ? app_uv(d, uv) : uvuni_to_utf8(d, uv);
+		    d = id_utf ? app_uv(d, uv) : uvuni_to_utf8(d, uv);
 		}
 		else {
 		    u_temp = (uv >> 16);
-		    d = ix ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
+		    d = id_utf ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
 
 		    u_temp = (uv & 0xFFFF);
-		    d = ix ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
+		    d = id_utf ? app_uv(d, u_temp) : uvuni_to_utf8(d, u_temp);
 		}
 	    }
 	}
@@ -254,15 +285,23 @@ sjis0213_to_unicode (...)
 
 
 void
-unicode_to_sjis0213 (...)
+unicode_to_sjis2003 (...)
   ALIAS:
-    utf8_to_sjis0213    = 1
-    utf16le_to_sjis0213 = 2
-    utf16be_to_sjis0213 = 3
-    utf32le_to_sjis0213 = 4
-    utf32be_to_sjis0213 = 5
-    utf16_to_sjis0213   = 6
-    utf32_to_sjis0213   = 7
+       utf8_to_sjis2003 = 1
+    utf16le_to_sjis2003 = 2
+    utf16be_to_sjis2003 = 3
+    utf32le_to_sjis2003 = 4
+    utf32be_to_sjis2003 = 5
+      utf16_to_sjis2003 = 6
+      utf32_to_sjis2003 = 7
+    unicode_to_sjis0213 = 8
+       utf8_to_sjis0213 = 9
+    utf16le_to_sjis0213 = 10
+    utf16be_to_sjis0213 = 11
+    utf32le_to_sjis0213 = 12
+    utf32be_to_sjis0213 = 13
+      utf16_to_sjis0213 = 14
+      utf32_to_sjis0213 = 15
   PREINIT:
     SV *src, *dst, *cvref;
     STRLEN srclen, dstlen, retlen;
@@ -270,21 +309,25 @@ unicode_to_sjis0213 (...)
     U16 j, *tbl_row, **tbl_plain;
     UV uv, uv2;
     UV (*ord_uv)(U8 *, STRLEN, STRLEN *);
+    int  id_utf, use2004;
   PPCODE:
+    use2004 = ix < NUM_fromUTF;
+    id_utf  = ix % NUM_fromUTF;
+
     STMT_ASSIGN_CVREF_AND_SRC(funcname_fm[ix])
-    if (ix == 0 && !SvUTF8(src)) {
+    if (id_utf == 0 && !SvUTF8(src)) {
 	src = sv_mortalcopy(src);
 	sv_utf8_upgrade(src);
     }
-    else if (ix && SvUTF8(src)) {
+    else if (id_utf && SvUTF8(src)) {
 	src = sv_mortalcopy(src);
 	sv_utf8_downgrade(src, FALSE);
     }
-    STMT_ASSIGN_LENDST(maxlen_fm[ix])
+    STMT_ASSIGN_LENDST(maxlen_fm[id_utf])
 
-    ord_uv = ord_uv_in[ix];
+    ord_uv = ord_uv_in[id_utf];
 
-    if (ix == 6 && 2 <= e - s) { /* UTF-16 */
+    if (id_utf == 6 && 2 <= e - s) { /* UTF-16 */
 	if (memEQ("\xFF\xFE",s,2)) {
 	    s += 2;
 	    ord_uv = ord_in_utf16le;
@@ -293,7 +336,7 @@ unicode_to_sjis0213 (...)
 	    s += 2;
 	}
     }
-    else if (ix == 7 && 4 <= e - s) { /* UTF-32 */
+    else if (id_utf == 7 && 4 <= e - s) { /* UTF-32 */
 	if (memEQ("\xFF\xFE\x00\x00",s,4)) {
 	    s += 4;
 	    ord_uv = ord_in_utf32le;
@@ -305,7 +348,7 @@ unicode_to_sjis0213 (...)
 
     if (cvref) {
 	for (p = s; p < e;) {
-	    uv = ix
+	    uv = id_utf
 		? ord_uv(p, e - p, &retlen)
 		: utf8n_to_uvuni(p, (e - p), &retlen, 0);
 
@@ -338,7 +381,7 @@ unicode_to_sjis0213 (...)
 	d = (U8*)SvPVX(dst);
 
 	for (p = s; p < e;) {
-	    uv = ix
+	    uv = id_utf
 		? ord_uv(p, e - p, &retlen)
 		: utf8n_to_uvuni(p, (e - p), &retlen, 0);
 

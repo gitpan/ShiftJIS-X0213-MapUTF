@@ -10,7 +10,7 @@ require DynaLoader;
 
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = '0.13';
+$VERSION = '0.20';
 $PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 @EXPORT = qw(
@@ -18,17 +18,46 @@ $PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
     sjis0213_to_utf8     utf8_to_sjis0213
     sjis0213_to_utf16le  utf16le_to_sjis0213
     sjis0213_to_utf16be  utf16be_to_sjis0213
+
+    sjis2003_to_unicode  unicode_to_sjis2003
+    sjis2003_to_utf8     utf8_to_sjis2003
+    sjis2003_to_utf16le  utf16le_to_sjis2003
+    sjis2003_to_utf16be  utf16be_to_sjis2003
 );
 
 %EXPORT_TAGS = (
-    'unicode'  => [ 'sjis0213_to_unicode', 'unicode_to_sjis0213' ],
-    'utf8'     => [ 'sjis0213_to_utf8',    'utf8_to_sjis0213'    ],
-    'utf16'    => [                        'utf16_to_sjis0213'   ],
-    'utf16le'  => [ 'sjis0213_to_utf16le', 'utf16le_to_sjis0213' ],
-    'utf16be'  => [ 'sjis0213_to_utf16be', 'utf16be_to_sjis0213' ],
-    'utf32'    => [                        'utf32_to_sjis0213'   ],
-    'utf32le'  => [ 'sjis0213_to_utf32le', 'utf32le_to_sjis0213' ],
-    'utf32be'  => [ 'sjis0213_to_utf32be', 'utf32be_to_sjis0213' ],
+    'unicode'  => [
+	'sjis2003_to_unicode', 'unicode_to_sjis2003',
+	'sjis0213_to_unicode', 'unicode_to_sjis0213',
+    ],
+    'utf8'     => [
+	'sjis2003_to_utf8',    'utf8_to_sjis2003',
+	'sjis0213_to_utf8',    'utf8_to_sjis0213',
+    ],
+    'utf16'    => [
+	                       'utf16_to_sjis2003',
+	                       'utf16_to_sjis0213',
+    ],
+    'utf16le'  => [
+	'sjis2003_to_utf16le', 'utf16le_to_sjis2003',
+	'sjis0213_to_utf16le', 'utf16le_to_sjis0213',
+    ],
+    'utf16be'  => [
+	'sjis2003_to_utf16be', 'utf16be_to_sjis2003',
+	'sjis0213_to_utf16be', 'utf16be_to_sjis0213',
+    ],
+    'utf32'    => [
+	                       'utf32_to_sjis2003',
+	                       'utf32_to_sjis0213',
+    ],
+    'utf32le'  => [
+	'sjis2003_to_utf32le', 'utf32le_to_sjis2003',
+	'sjis0213_to_utf32le', 'utf32le_to_sjis0213',
+    ],
+    'utf32be'  => [
+	'sjis2003_to_utf32be', 'utf32be_to_sjis2003',
+	'sjis0213_to_utf32be', 'utf32be_to_sjis0213',
+    ],
 );
 
 @EXPORT_OK = map @$_, values %EXPORT_TAGS;
@@ -41,24 +70,53 @@ __END__
 
 =head1 NAME
 
-ShiftJIS::X0213::MapUTF - conversion between Shift_JISX0213 and Unicode
+ShiftJIS::X0213::MapUTF - conversion between Shift_JIS-2003 and Unicode
+and between (old) Shift_JISX0213and Unicode
 
 =head1 SYNOPSIS
 
     use ShiftJIS::X0213::MapUTF;
 
+    # for Shift_JIS-2003 (specified by JIS X 0213:2004)
+    $utf16be_string  = sjis2003_to_utf16be($sjis2003_string);
+    $sjis2003_string = utf16be_to_sjis2003($utf16be_string);
+
+    # for Shift_JISX0213 (specified by JIS X 0213:2000)
     $utf16be_string  = sjis0213_to_utf16be($sjis0213_string);
     $sjis0213_string = utf16be_to_sjis0213($utf16be_string);
 
 =head1 DESCRIPTION
 
-This module provides some functions to map
+This module provides functions to convert
+from Shift_JIS-2003 to Unicode, and vice versa.
+
+For backward compatibility, this module also provides functions to convert
 from Shift_JISX0213 to Unicode, and vice versa.
 
-=head2 Conversion from Shift_JISX0213 to Unicode
+For convenience, "SJIS-X" is used to refer to
+both Shift_JIS-2003 and Shift_JISX0213 hereafter.
+
+The following 10 JIS Kanji characters are added in JIS X 0213:2004.
+These mappings are used only for Shift_JIS-2003,
+and not for for Shift_JISX0213.
+
+    SJIS-2003   Unicode 3.2.0
+
+    0x879F        U+4FF1
+    0x889E        U+525D
+    0x9873        U+20B9F
+    0x989E        U+541E
+    0xEAA5        U+5653
+    0xEFF8        U+59F8
+    0xEFF9        U+5C5B
+    0xEFFA        U+5E77
+    0xEFFB        U+7626
+    0xEFFC        U+7E6B
+
+=head2 Conversion from SJIS-X to Unicode
 
 If the first parameter is a reference,
-that is used for coping with Shift_JISX0213 characters
+that is used for coping with SJIS-X characters
 unmapped to Unicode, C<SJIS_CALLBACK>.
 (any reference will not allowed as C<STRING>.)
 
@@ -66,7 +124,7 @@ If C<SJIS_CALLBACK> is given, C<STRING> is
 the second parameter; otherwise the first.
 
 If C<SJIS_CALLBACK> is not specified,
-Shift_JISX0213 characters unmapped to Unicode are silently deleted
+SJIS-X characters unmapped to Unicode are silently deleted
 and illegal bytes are skipped by one byte.
 (as if a coderef constantly returning null string, C<sub {''}>,
 is passed as C<SJIS_CALLBACK>.)
@@ -96,10 +154,36 @@ Example
 In the example above, C<$char> may be C<"\xfc\xfc">, etc.
 
 The return value of C<SJIS_CALLBACK> must be legal in the target format.
-E.g. never use with C<sjis0213_to_utf16be()> a callback that returns UTF-8.
+E.g. never use with C<sjis2003_to_utf16be()> a callback that returns UTF-8.
 I.e. you should prepare C<SJIS_CALLBACK> for each UTF.
 
 =over 4
+
+=item C<sjis2003_to_utf8([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to UTF-8
+
+=item C<sjis2003_to_unicode([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to Unicode
+(Perl's internal format, flagged with C<SVf_UTF8>,
+see F<perlunicode>)
+
+=item C<sjis2003_to_utf16le([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to UTF-16LE.
+
+=item C<sjis2003_to_utf16be([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to UTF-16BE.
+
+=item C<sjis2003_to_utf32le([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to UTF-32LE.
+
+=item C<sjis2003_to_utf32be([SJIS_CALLBACK,] STRING)>
+
+Converts Shift_JIS-2003 to UTF-32BE.
 
 =item C<sjis0213_to_utf8([SJIS_CALLBACK,] STRING)>
 
@@ -129,18 +213,18 @@ Converts Shift_JISX0213 to UTF-32BE.
 
 =back
 
-=head2 Conversion from Unicode to Shift_JISX0213
+=head2 Conversion from Unicode to SJIS-X
 
 If the first parameter is a reference,
 that is used for coping with Unicode characters
-unmapped to Shift_JISX0213, C<UNICODE_CALLBACK>.
+unmapped to SJIS-X, C<UNICODE_CALLBACK>.
 (any reference will not allowed as C<STRING>.)
 
 If C<UNICODE_CALLBACK> is given, C<STRING> is
 the second parameter; otherwise the first.
 
-If C<UNICODE_CALLBACK> is not specified,
-Shift_JIS characters unmapped to Unicode are silently deleted
+If C<UNICODE_CALLBACK> is not specified, SJIS-X characters
+unmapped to Unicode are silently deleted
 and partial bytes are skipped by one byte.
 (as if a coderef constantly returning null string, C<sub {''}>
 is passed as C<UNICODE_CALLBACK>.)
@@ -156,7 +240,7 @@ and the second argument is an unsigned integer representing the byte.
 If not partial, the first argument is an unsigned interger
 representing a Unicode code point.
 
-For example, characters unmapped to Shift_JISX0213 are
+For example, characters unmapped to SJIS-X are
 converted to numerical character references for HTML 4.01.
 
     sub toHexNCR {
@@ -165,13 +249,49 @@ converted to numerical character references for HTML 4.01.
         die sprintf "illegal byte 0x%02x", $byte;
     }
 
-    $sjis0213 = utf8_to_sjis0213   (\&toHexNCR, $utf8_string);
-    $sjis0213 = unicode_to_sjis0213(\&toHexNCR, $unicode_string);
-    $sjis0213 = utf16le_to_sjis0213(\&toHexNCR, $utf16le_string);
+    $sjis2003 = utf8_to_sjis2003   (\&toHexNCR, $utf8_string);
+    $sjis2003 = unicode_to_sjis2003(\&toHexNCR, $unicode_string);
+    $sjis2003 = utf16le_to_sjis2003(\&toHexNCR, $utf16le_string);
 
-The return value of C<UNICODE_CALLBACK> must be legal in Shift_JISX0213.
+The return value of C<UNICODE_CALLBACK> must be legal in Shift_JIS-2003.
 
 =over 4
+
+=item C<utf8_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-8 to Shift_JIS-2003.
+
+=item C<unicode_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts Unicode to Shift_JIS-2003.
+
+This B<Unicode> is in the Perl's internal format (see F<perlunicode>).
+If C<SVf_UTF8> is not turned on,
+C<STRING> is upgraded as an ISO 8859-1 (latin1) string.
+
+=item C<utf16_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-16 (with or w/o C<BOM>) to Shift_JIS-2003.
+
+=item C<utf16le_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-16LE to Shift_JIS-2003.
+
+=item C<utf16be_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-16BE to Shift_JIS-2003.
+
+=item C<utf32_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-32 (with or w/o C<BOM>) to Shift_JIS-2003.
+
+=item C<utf32le_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-32LE to Shift_JIS-2003.
+
+=item C<utf32be_to_sjis2003([UNICODE_CALLBACK,] STRING)>
+
+Converts UTF-32BE to Shift_JIS-2003.
 
 =item C<utf8_to_sjis0213([UNICODE_CALLBACK,] STRING)>
 
@@ -215,6 +335,11 @@ Converts UTF-32BE to Shift_JISX0213.
 
 B<By default:>
 
+    sjis2003_to_utf8     utf8_to_sjis2003
+    sjis2003_to_utf16le  utf16le_to_sjis2003
+    sjis2003_to_utf16be  utf16be_to_sjis2003
+    sjis2003_to_unicode  unicode_to_sjis2003
+
     sjis0213_to_utf8     utf8_to_sjis0213
     sjis0213_to_utf16le  utf16le_to_sjis0213
     sjis0213_to_utf16be  utf16be_to_sjis0213
@@ -222,50 +347,45 @@ B<By default:>
 
 B<On request:>
 
+    sjis2003_to_utf32le  utf32le_to_sjis2003
+    sjis2003_to_utf32be  utf32be_to_sjis2003
+                         utf16_to_sjis2003 [*]
+                         utf32_to_sjis2003 [*]
+
     sjis0213_to_utf32le  utf32le_to_sjis0213
     sjis0213_to_utf32be  utf32be_to_sjis0213
                          utf16_to_sjis0213 [*]
                          utf32_to_sjis0213 [*]
 
-[*] Their counterparts C<sjis0213_to_utf16()> and C<sjis0213_to_utf32()>
+[*] Their counterparts C<sjis2003_to_utf16()>, C<sjis2003_to_utf32()>,
+C<sjis0213_to_utf16()> and C<sjis0213_to_utf32()>
 are not implemented yet. They need more investigation
 on return values from C<SJIS_CALLBACK>...
 (concatenation needs recognition of and coping with C<BOM>)
 
 =head1 BUGS
 
-On mapping between Shift_JISX0213 and Unicode used in this module,
+On mapping between SJIS-X and Unicode used in this module,
 notice that:
 
 =over 4
 
 =item *
 
-If an authentic mapping would have been published,
-the mapping by this module will be corrected according to that mapping.
-
-=item *
-
-0xFC5A in Shift_JISX0213 is mapped to U+9B1D according to JIS X 0213:2000,
-while Unicode's Unihan.txt maps it to U+9B1C.
-
-=item *
-
-0x81D4 and 0x81D5 in Shift_JISX0213 is mapped in the block
-of C<Halfwidth and Fullwidth Forms>,
-not in the block of C<Miscellaneous Mathematical Symbols-B>,
-according to Shibano's JIS KANJI JITEN, published in June, 2002.
+0xFC5A in Shift_JIS-2003 and Shift_JISX0213
+is mapped to U+9B1C according to JIS X 0213:2004,
+although JIS X 0213:2000 maps it to U+9B1D.
 
 =item *
 
 The following 25 JIS Non-Kanji characters are not included in Unicode 3.2.0.
 So they are mapped to each 2 characters in Unicode.
-These mappings are done round-trippedly for *one Shift_JISX0213 character*.
-Then round-trippedness for a Shift_JISX0213 *string* is broken.
-(E.g. Shift_JISX0213 <0x8663> and <0x857B, 0x867B> both are mapped
-to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS <0x8663>.)
+These mappings are done round-trippedly for *one SJIS-X character*.
+Then round-trippedness for a SJIS-X *string* is broken.
+(E.g. SJIS-X <0x8663> and <0x857B, 0x867B> both are mapped
+to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS-X <0x8663>.)
 
-    SJIS0213  Unicode 3.2.0    # Name by JIS X 0213:2000
+    SJIS-X     Unicode 3.2.0    # Name by JIS X 0213:2004
 
     0x82F5    <U+304B, U+309A> # [HIRAGANA LETTER BIDAKUON NGA]
     0x82F6    <U+304D, U+309A> # [HIRAGANA LETTER BIDAKUON NGI]
@@ -278,8 +398,8 @@ to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS <0x8663>.)
     0x839A    <U+30B1, U+309A> # [KATAKANA LETTER BIDAKUON NGE]
     0x839B    <U+30B3, U+309A> # [KATAKANA LETTER BIDAKUON NGO]
     0x839C    <U+30BB, U+309A> # [KATAKANA LETTER AINU CE]
-    0x839D    <U+30C4, U+309A> # [KATAKANA LETTER AINU TU(TU)]
-    0x839E    <U+30C8, U+309A> # [KATAKANA LETTER AINU TO(TU)]
+    0x839D    <U+30C4, U+309A> # [KATAKANA LETTER AINU TU]
+    0x839E    <U+30C8, U+309A> # [KATAKANA LETTER AINU TO]
     0x83F6    <U+31F7, U+309A> # [KATAKANA LETTER AINU P]
     0x8663    <U+00E6, U+0300> # [LATIN SMALL LETTER AE WITH GRAVE]
     0x8667    <U+0254, U+0300> # [LATIN SMALL LETTER OPEN O WITH GRAVE]
@@ -301,7 +421,7 @@ SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
   http://homepage1.nifty.com/nomenclator/perl/
 
-  Copyright(C) 2002-2003, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2004, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
@@ -310,15 +430,10 @@ and/or modify it under the same terms as Perl itself.
 
 =over 4
 
-=item JIS X 0213:2000
+=item JIS X 0213:2000/Amd1:2004
 
 7-bit and 8-bit double byte coded extended KANJI sets
 for information interchange
-
-=item JIS KANJI JITEN, the revised edition
-
-edited by Shibano, published by Japanese Standards Association,
-2002, Tokyo [ISBN4-542-20129-5]
 
 =item Japanese Industrial Standards Committee (JISC)
 
@@ -332,7 +447,12 @@ L<http://www.jsa.or.jp/>
 
 L<http://www.unicode.org/Public/UNIDATA/Unihan.txt>
 
-=item A mapping table between Shift_JISX0213 and Unicode 3.2.0
+=item JIS KANJI JITEN, the revised edition
+
+edited by Shibano, published by Japanese Standards Association,
+2002, Tokyo [ISBN4-542-20129-5]
+
+=item A mapping table between Shift_JIS-2003 and Unicode 3.2.0
 
 L<http://homepage1.nifty.com/nomenclator/unicode/sjis0213.zip>
 
@@ -343,8 +463,7 @@ but through the table, you will know what is to be done by this module.)
 
 conversion between Microsoft Windows CP-932 and Unicode
 
-(The CP932-Unicode mapping is different
-with the Shift_JISX0213-Unicode mapping,
+(CP932-Unicode mapping is different with Shift_JIS-2003-Unicode mapping,
 but what you desire may be the former.)
 
 =back

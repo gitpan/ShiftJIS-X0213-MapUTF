@@ -1,5 +1,14 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.20  Sun Feb 29 21:00:05 2004
+    - Enhancement for JIS X 0213:2004 (Amendament 1), which repertoire is
+      ten chracters larger than JIS X 0213:2000.
+    * New functions named sjis2003_to_u* and u*_to_sjis2003 support
+      Shift_JIS-2003 specified by JIS X 0213:2004. 
+    * Old functions named sjis0213_to_u* and u*_to_sjis0213.
+      continue to support Shift_JISX0213 specified by JIS X 0213:2000,
+      but mapping for SJIS 0xFC5A is fixed after JIS X 0213:2004.
+
 0.13  Sat Oct 18 12:01:25 2003
     - pod: added link to JISC.
 

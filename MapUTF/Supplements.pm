@@ -7,10 +7,10 @@ use vars qw(%Supplements);
 require Exporter;
 @ISA = qw(Exporter);
 
-@EXPORT = qw(to_sjis0213_supplements);
+@EXPORT = qw(to_sjis0213_supplements to_sjis2003_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.12';
+$VERSION = '0.20';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
@@ -40,8 +40,11 @@ $VERSION = '0.12';
   0x4E44,	# CJK UNIFIED IDEOGRAPH-4E44 (JIS X 0212 16-17)
     "\x81\x59",	# IDEOGRAPHIC CLOSING MARK (U+3006)
 
-  0x9B1C,	# CJK UNIFIED IDEOGRAPH-9B1C (JIS X 0212 74-14, Unihan.txt)
-    "\xFC\x5A", # CJK UNIFIED IDEOGRAPH-9B1D
+  0x9B1C,	# CJK UNIFIED IDEOGRAPH-9B1C (for backward compatibility)
+    "\xFC\x5A", # CJK UNIFIED IDEOGRAPH-9B1C
+
+  0x9B1D,	# CJK UNIFIED IDEOGRAPH-9B1D (JIS X 0213:2000)
+    "\xFC\x5A", # CJK UNIFIED IDEOGRAPH-9B1C
 
   0xFF3C,	# FULLWIDTH REVERSE SOLIDUS
     "\x81\x5F", # REVERSE SOLIDUS (U+005C)
@@ -63,6 +66,7 @@ $VERSION = '0.12';
 );
 
 sub to_sjis0213_supplements { defined $_[0] && $Supplements{$_[0]} || '' }
+sub to_sjis2003_supplements { defined $_[0] && $Supplements{$_[0]} || '' }
 
 1;
 __END__
@@ -75,6 +79,15 @@ ShiftJIS::X0213::MapUTF::Supplements - Supplemental Mapping from Unicode to Shif
 
   use ShiftJIS::X0213::MapUTF;
   use ShiftJIS::X0213::MapUTF::Supplements;
+
+  $sjis_str = utf8_to_sjis2003   (\&to_sjis2003_supplements, $utf8_str);
+  $sjis_str = utf16_to_sjis2003  (\&to_sjis2003_supplements, $utf16_str);
+  $sjis_str = utf16le_to_sjis2003(\&to_sjis2003_supplements, $utf16le_str);
+  $sjis_str = utf16be_to_sjis2003(\&to_sjis2003_supplements, $utf16be_str);
+  $sjis_str = utf32_to_sjis2003  (\&to_sjis2003_supplements, $utf32_str);
+  $sjis_str = utf32le_to_sjis2003(\&to_sjis2003_supplements, $utf32le_str);
+  $sjis_str = utf32be_to_sjis2003(\&to_sjis2003_supplements, $utf32be_str);
+  $sjis_str = unicode_to_sjis2003(\&to_sjis2003_supplements, $unicode_str);
 
   $sjis_str = utf8_to_sjis0213   (\&to_sjis0213_supplements, $utf8_str);
   $sjis_str = utf16_to_sjis0213  (\&to_sjis0213_supplements, $utf16_str);
@@ -92,14 +105,21 @@ from Unicode to Shift_JISX0213, via a coderef.
 
 =over 4
 
+=item C<$sjis2003_char = to_sjis2003_supplements($unicode_codepoint)>
+
 =item C<$sjis0213_char = to_sjis0213_supplements($unicode_codepoint)>
 
-Returns a Shift_JISX0213 character (as a string) for some Unicode codepoints
-unmapped to Shift_JISX0213.
-Otherwise returns a null string.
+Returns a SJIS character (as a string) for some Unicode codepoints
+unmapped to SJIS. Otherwise returns a null string.
 
-E.g. C<to_sjis0213_supplements(0x9B1C)> returns C<"\xFC\x5A">;
+B<NOTE:> C<to_sjis0213_supplements> is just an alias
+for C<to_sjis2003_supplements>, then their mappings has no difference.
+
+E.g. C<to_sjis2003_supplements(0x9B1D)> returns C<"\xFC\x5A">;
+     C<to_sjis2003_supplements(0x00B5)> returns C<"\x83\xCA">;
+     C<to_sjis0213_supplements(0x9B1C)> returns C<"\xFC\x5A">;
      C<to_sjis0213_supplements(0x00B5)> returns C<"\x83\xCA">.
+
 
 =back
 
@@ -112,11 +132,11 @@ may be added, modified, or removed in future.
 
 =head1 AUTHOR
 
-SADAHIRO Tomoyuki <bqw10602@nifty.com>
+SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
   http://homepage1.nifty.com/nomenclator/perl/
 
-  Copyright(C) 2002-2003, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2004, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
