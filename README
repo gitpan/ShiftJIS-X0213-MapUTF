@@ -1,4 +1,4 @@
-ShiftJIS::X0213::MapUTF version 0.10
+ShiftJIS::X0213::MapUTF version 0.11
 ================
 
 NAME
@@ -30,7 +30,7 @@ This module provides the following functions:
     utf32be_to_sjis0213() converts UTF-32BE to Shift_JISX0213.
     unicode_to_sjis0213() converts Unicode[*] to Shift_JISX0213.
 
-    [*] .. Perl's internal form. see perlunicode.pod in Perl 5.6 or later.
+    [*] .. Perl's internal format. see perlunicode.pod in Perl 5.6 or later.
 
 DEPENDENCIES AND INSTALLATION
 

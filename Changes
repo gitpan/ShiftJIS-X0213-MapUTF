@@ -1,8 +1,12 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.11  Sun Nov 03 19:32:21 2002
+    - fix a momery leak when the process died in a callback.
+      like: eval { utf32be_to_sjis0213(sub { die }, "\x00"); };
+
 0.10  Sat Nov 02 21:12:23 2002
     - manipulation of illegal Unicode strings: u*_to_sjis0213 functions
-      may call UNICODE_FALLBACK coderef with two parameters.
+      may call UNICODE_CALLBACK coderef with two parameters.
     - UTF-8, UTF-32(BE|LE) are supported.
     - tests are improved.
 

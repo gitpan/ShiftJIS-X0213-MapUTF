@@ -31,7 +31,7 @@
     s = (U8*)SvPV(src,srclen);			\
     e = s + srclen;				\
     dstlen = srclen * maxlen + 1;		\
-    dst = newSV(dstlen);			\
+    dst = sv_2mortal(newSV(dstlen));		\
     (void)SvPOK_only(dst);
 
 
@@ -39,6 +39,26 @@
     mblen = Is_SJIS0213_MBLEN(p);		\
     lb = fmsjis0213_tbl[*p];			\
     uv = lb.tbl ? lb.tbl[p[1]] : lb.sbc;
+
+
+#define STMT_FETCH_FROM_UV(ordStmt)		\
+    j = 0;					\
+    if (isbase(uv) && p < e) {			\
+	uv2 = ordStmt;				\
+	if (retlen)				\
+	    j = (U16)getcomposite(uv, uv2);	\
+	if (j)					\
+	    p += retlen;			\
+    }						\
+    if (!j) {					\
+        tbl_plain = Is_VALID_UTF(uv)		\
+	    ? tosjis0213_tbl[uv >> 16]		\
+	    : NULL;				\
+	tbl_row = tbl_plain			\
+	    ? tbl_plain[(uv >> 8) & 0xff]	\
+	    : NULL;				\
+	j = tbl_row ? tbl_row[uv & 0xff] : 0;	\
+    }
 
 
 /* Perl 5.6.1 ? */
@@ -56,11 +76,9 @@ sv_cat_retcvref (SV *dst, SV *cv, SV *sv, bool isbyte)
 {
     dSP;
     int count;
-    SV* retsv;
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-
     if (isbyte)
 	XPUSHs(&PL_sv_undef);
     XPUSHs(sv_2mortal(sv));
@@ -69,12 +87,10 @@ sv_cat_retcvref (SV *dst, SV *cv, SV *sv, bool isbyte)
     SPAGAIN;
     if (count != 1)
 	croak("Panic in XS, " PkgName "\n");
-    retsv = newSVsv(POPs);
+    sv_catsv(dst,POPs);
     PUTBACK;
     FREETMPS;
     LEAVE;
-    sv_catsv(dst,retsv);
-    sv_2mortal(retsv);
 }
 
 static STRLEN maxlen_fm[] = {
@@ -164,7 +180,7 @@ sjis0213_to_unicode (arg1, arg2=0)
 	*d = '\0';
 	SvCUR_set(dst, d - (U8*)SvPVX(dst));
     }
-    XPUSHs(sv_2mortal(dst));
+    XPUSHs(dst);
 
 
 void
@@ -234,7 +250,7 @@ sjis0213_to_utf8 (arg1, arg2=0)
 	*d = '\0';
 	SvCUR_set(dst, d - (U8*)SvPVX(dst));
     }
-    XPUSHs(sv_2mortal(dst));
+    XPUSHs(dst);
 
 
 void
@@ -261,19 +277,7 @@ unicode_to_sjis0213 (arg1, arg2=0)
 	    uv = utf8n_to_uvuni(p, e - p, &retlen, 0);
 	    p += retlen;
 
-	    j = 0;
-	    if (isbase(uv) && p < e) {
-		uv2 = utf8n_to_uvuni(p, e - p, &retlen, 0);
-		j = (U16)getcomposite(uv, uv2);
-		if (j)
-		    p += retlen;
-	    }
-	    if (!j) {
-	        tbl_plain = Is_VALID_UTF(uv)
-			    ? tosjis0213_tbl[uv >> 16] : NULL;
-		tbl_row = tbl_plain ? tbl_plain[(uv >> 8) & 0xff] : NULL;
-		j = tbl_row ? tbl_row[uv & 0xff] : 0;
-	    }
+	    STMT_FETCH_FROM_UV(utf8n_to_uvuni(p, e - p, &retlen, 0))
 
 	    if (j || !uv) {
 		if (j >= 256) {
@@ -296,19 +300,7 @@ unicode_to_sjis0213 (arg1, arg2=0)
 	    uv = utf8n_to_uvuni(p, e - p, &retlen, 0);
 	    p += retlen;
 
-	    j = 0;
-	    if (isbase(uv) && p < e) {
-		uv2 = utf8n_to_uvuni(p, e - p, &retlen, 0);
-		j = (U16)getcomposite(uv, uv2);
-		if (j)
-		    p += retlen;
-	    }
-	    if (!j) {
-	        tbl_plain = Is_VALID_UTF(uv) ?
-			    tosjis0213_tbl[uv >> 16] : NULL;
-		tbl_row = tbl_plain ? tbl_plain[(uv >> 8) & 0xff] : NULL;
-		j = tbl_row ? tbl_row[uv & 0xff] : 0;
-	    }
+	    STMT_FETCH_FROM_UV(utf8n_to_uvuni(p, e - p, &retlen, 0))
 
 	    if (j || !uv) {
 		if (j >= 256)
@@ -319,7 +311,7 @@ unicode_to_sjis0213 (arg1, arg2=0)
 	*d = '\0';
 	SvCUR_set(dst, d - (U8*)SvPVX(dst));
     }
-    XPUSHs(sv_2mortal(dst));
+    XPUSHs(dst);
 
 
 void
@@ -356,20 +348,7 @@ utf8_to_sjis0213 (arg1, arg2=0)
 		continue;
 	    }
 
-	    j = 0;
-	    if (isbase(uv) && (1 < e - p)) {
-		uv2 = ord_uv(p, e - p, &retlen);
-		if (retlen)
-		    j = (U16)getcomposite(uv, uv2);
-		if (j)
-		    p += retlen;
-	    }
-	    if (!j) {
-	        tbl_plain = Is_VALID_UTF(uv) ?
-		    tosjis0213_tbl[uv >> 16] : NULL;
-		tbl_row = tbl_plain ? tbl_plain[(uv >> 8) & 0xff] : NULL;
-		j = tbl_row ? tbl_row[uv & 0xff] : 0;
-	    }
+	    STMT_FETCH_FROM_UV(ord_uv(p, e - p, &retlen))
 
 	    if (j || !uv) {
 		if (j >= 256) {
@@ -398,20 +377,7 @@ utf8_to_sjis0213 (arg1, arg2=0)
 		continue;
 	    }
 
-	    j = 0;
-	    if (isbase(uv) && (1 < e - p)) {
-		uv2 = ord_uv(p, e - p, &retlen);
-		if (retlen)
-		    j = (U16)getcomposite(uv, uv2);
-		if (j)
-		    p += retlen;
-	    }
-	    if (!j) {
-	        tbl_plain = Is_VALID_UTF(uv) ?
-		    tosjis0213_tbl[uv >> 16] : NULL;
-		tbl_row = tbl_plain ? tbl_plain[(uv >> 8) & 0xff] : NULL;
-		j = tbl_row ? tbl_row[uv & 0xff] : 0;
-	    }
+	    STMT_FETCH_FROM_UV(ord_uv(p, e - p, &retlen));
 
 	    if (j || !uv) {
 		if (j >= 256)
@@ -422,5 +388,5 @@ utf8_to_sjis0213 (arg1, arg2=0)
 	*d = '\0';
 	SvCUR_set(dst, d - (U8*)SvPVX(dst));
     }
-    XPUSHs(sv_2mortal(dst));
+    XPUSHs(dst);
 

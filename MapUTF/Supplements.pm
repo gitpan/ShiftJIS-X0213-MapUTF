@@ -10,7 +10,7 @@ require Exporter;
 @EXPORT = qw(to_sjis0213_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
@@ -86,7 +86,7 @@ ShiftJIS::X0213::MapUTF::Supplements - Supplemental Mapping from Unicode to Shif
 =head1 DESCRIPTION
 
 This module provides some supplemental mappings (fallbacks)
-from Unicode to Shift_JISX0213, via a coderef, the C<UNICODE_FALLBACK> handler.
+from Unicode to Shift_JISX0213, via a coderef.
 
 =over 4
 
