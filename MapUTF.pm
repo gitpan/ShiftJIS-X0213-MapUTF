@@ -3,7 +3,7 @@ package ShiftJIS::X0213::MapUTF;
 require 5.006;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION $PACKAGE @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 require Exporter;
 require DynaLoader;
@@ -12,12 +12,27 @@ require AutoLoader;
 @ISA = qw(Exporter DynaLoader);
 
 @EXPORT = qw(
-    sjis0213_to_unicode sjis0213_to_utf16le sjis0213_to_utf16be
-    unicode_to_sjis0213 utf16le_to_sjis0213 utf16be_to_sjis0213
+    sjis0213_to_unicode  unicode_to_sjis0213
+    sjis0213_to_utf8     utf8_to_sjis0213
+    sjis0213_to_utf16le  utf16le_to_sjis0213
+    sjis0213_to_utf16be  utf16be_to_sjis0213
 );
-@EXPORT_OK = ();
 
-$VERSION = '0.02';
+%EXPORT_TAGS = (
+    'unicode'  => [ 'sjis0213_to_unicode', 'unicode_to_sjis0213' ],
+    'utf8'     => [ 'sjis0213_to_utf8',    'utf8_to_sjis0213'    ],
+    'utf16le'  => [ 'sjis0213_to_utf16le', 'utf16le_to_sjis0213' ],
+    'utf16be'  => [ 'sjis0213_to_utf16be', 'utf16be_to_sjis0213' ],
+    'utf32le'  => [ 'sjis0213_to_utf32le', 'utf32le_to_sjis0213' ],
+    'utf32be'  => [ 'sjis0213_to_utf32be', 'utf32be_to_sjis0213' ],
+);
+
+@EXPORT_OK = map @$_, values %EXPORT_TAGS;
+$EXPORT_TAGS{all}  = [ @EXPORT_OK ];
+
+$VERSION = '0.10';
+
+$PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 bootstrap ShiftJIS::X0213::MapUTF $VERSION;
 
@@ -32,85 +47,134 @@ ShiftJIS::X0213::MapUTF - conversion between Shift_JISX0213 and Unicode
 
     use ShiftJIS::X0213::MapUTF;
 
-    $unicode_string  = sjis0213_to_unicode($sjis0213_string);
-    $sjis0213_string = unicode_to_sjis0213($unicode_string);
+    $utf16be_string  = sjis0213_to_utf16be($sjis0213_string);
+    $sjis0213_string = utf16be_to_sjis0213($utf16be_string);
 
 =head1 DESCRIPTION
 
 This module provides some functions to map
 from Shift_JISX0213 to Unicode, and vice versa.
 
+=head2 Functions to transcode Shift_JISX0213 to Unicode
+
+If a coderef C<SJIS_FALLBACK> is not specified,
+characters unmapped to Unicode are deleted;
+otherwise, a string returned from C<SJIS_FALLBACK> is inserted there.
+The argument for B<SJIS_FALLBACK> is a Shift_JISX0213 string like
+C<"\x80">, C<"\xfc\xfc">, C<"\xff">
+(that may be a byte that is illegal or a partial charcter).
+
+The return value of B<SJIS_FALLBACK> must be legal in the target format.
+E.g. it must be silly to use with sjis0213_to_utf16be()
+a fallback that returns UTF-8.
+I.e. you should prepare a fallback coderef for each encoding.
+
 =over 4
+
+=item C<sjis0213_to_utf8(STRING)>
+
+=item C<sjis0213_to_utf8(SJIS_FALLBACK, STRING)>
+
+Converts Shift_JISX0213 to UTF-8
 
 =item C<sjis0213_to_unicode(STRING)>
 
-=item C<sjis0213_to_unicode(CODEREF, STRING)>
+=item C<sjis0213_to_unicode(SJIS_FALLBACK, STRING)>
 
 Converts Shift_JISX0213 to Unicode
-(UTF-8/UTF-EBCDIC as a Unicode-oriented perl knows).
+(Perl's internal form (see perlunicode), flagged).
 
-Characters unmapped to Unicode are deleted,
-if C<CODEREF> is not specified;
-otherwise, converted using the C<CODEREF>
-from the Shift_JISX0213 character string.
-
-=item C<sjis0213_to_utf16be(STRING)>
-
-=item C<sjis0213_to_utf16be(CODEREF, STRING)>
-
-Converts Shift_JISX0213 to UTF-16BE.
-
-=item C<sjis0213_to_utf16le(STRING)>
-
-=item C<sjis0213_to_utf16le(CODEREF, STRING)>
+=item C<sjis0213_to_utf16le([SJIS_FALLBACK,] STRING)>
 
 Converts Shift_JISX0213 to UTF-16LE.
 
-Characters unmapped to Unicode are deleted,
-if C<CODEREF> is not specified;
-otherwise, converted using the C<CODEREF>
-from the Shift_JISX0213 character string.
+=item C<sjis0213_to_utf16be([SJIS_FALLBACK,] STRING)>
+
+Converts Shift_JISX0213 to UTF-16BE.
+
+=item C<sjis0213_to_utf32le([SJIS_FALLBACK,] STRING)>
+
+Converts Shift_JISX0213 to UTF-32LE.
+
+=item C<sjis0213_to_utf32be([SJIS_FALLBACK,] STRING)>
+
+Converts Shift_JISX0213 to UTF-32BE.
+
+=back
+
+=head2 Functions to transcode Shift_JISX0213 from Unicode
+
+If the C<UNICODE_FALLBACK> coderef is not specified,
+illegal bytes are skipped by one byte,
+and characters unmapped to Shift_JISX0213 are deleted;
+otherwise, a string returned from C<UNICODE_FALLBACK> is inserted there.
+
+The 1st argument for B<UNICODE_FALLBACK> is its Unicode codepoint (integer),
+or B<undef> when encounters an illegal byte.
+
+If the 1st argument is B<undef>, integer in byte is passed as the 2nd argument.
+ 
+For example, characters unmapped to Shift_JISX0213 are
+converted to numerical character references for HTML 4.01.
+
+    sub toHexNCR {
+        my ($char, $byte) = @_;
+        return sprintf("&#x%x;", $char) if defined $char;
+        die sprintf "illegal byte 0x%02x was found", $byte;
+    }
+
+    $sjis0213 = utf8_to_sjis0213(\&toHexNCR, $utf8_string);
+    $sjis0213 = unicode_to_sjis0213(\&toHexNCR, $unicode_string);
+    $sjis0213 = utf16le_to_sjis0213(\&toHexNCR, $utf16le_string);
+
+=over 4
+
+=item C<utf8_to_sjis0213(STRING)>
+
+=item C<utf8_to_sjis0213(UNICODE_FALLBACK, STRING)>
+
+Converts UTF-8 to Shift_JISX0213.
 
 =item C<unicode_to_sjis0213(STRING)>
 
-=item C<unicode_to_sjis0213(CODEREF, STRING)>
+=item C<unicode_to_sjis0213(UNICODE_FALLBACK, STRING)>
 
-Converts Unicode (UTF-8/UTF-EBCDIC as a Unicode-oriented perl knows)
-to Shift_JISX0213.
+Converts Unicode to Shift_JISX0213.
 
-Characters unmapped to Shift_JISX0213 are deleted,
-if C<CODEREF> is not specified;
-otherwise, converted using the C<CODEREF>
-from its Unicode codepoint (integer).
+This B<Unicode> is the Perl's internal form (see perlunicode).
+If not flagged, upgraded as an ISO 8859-1 string).
 
-For example, characters unmapped to Shift_JISX0213
-are converted to numerical character references for HTML 4.01.
-
-    unicode_to_sjis0213(sub {sprintf "&#x%04x;", shift}, $unicode_string);
-
-=item C<utf16be_to_sjis0213(STRING)>
-
-=item C<utf16be_to_sjis0213(CODEREF, STRING)>
-
-Converts UTF-16BE to Shift_JISX0213.
-
-=item C<utf16le_to_sjis0213(STRING)>
-
-=item C<utf16le_to_sjis0213(CODEREF, STRING)>
+=item C<utf16le_to_sjis0213([UNICODE_FALLBACK,] STRING)>
 
 Converts UTF-16LE to Shift_JISX0213.
 
-Characters unmapped to Shift_JISX0213 are deleted,
-if C<CODEREF> is not specified;
-otherwise, converted using the C<CODEREF>
-from its Unicode codepoint (integer).
+=item C<utf16be_to_sjis0213([UNICODE_FALLBACK,] STRING)>
 
-For example, characters unmapped to Shift_JISX0213
-are converted to numerical character references for HTML 4.01.
+Converts UTF-16BE to Shift_JISX0213.
 
-    utf16le_to_sjis0213(sub {sprintf "&#x%04x;", shift}, $utf16LE_string);
+=item C<utf32le_to_sjis0213([UNICODE_FALLBACK,] STRING)>
+
+Converts UTF-32LE to Shift_JISX0213.
+
+=item C<utf32be_to_sjis0213([UNICODE_FALLBACK,] STRING)>
+
+Converts UTF-32BE to Shift_JISX0213.
 
 =back
+
+=head2 Export
+
+B<By default:>
+
+    sjis0213_to_utf8     utf8_to_sjis0213
+    sjis0213_to_utf16le  utf16le_to_sjis0213
+    sjis0213_to_utf16be  utf16be_to_sjis0213
+    sjis0213_to_unicode  unicode_to_sjis0213
+
+B<On request:>
+
+    sjis0213_to_utf32le  utf32le_to_sjis0213
+    sjis0213_to_utf32be  utf32be_to_sjis0213
 
 =head1 BUGS
 
@@ -143,7 +207,7 @@ So they are mapped to each 2 characters in Unicode.
 These mappings are done round-trippedly for *one Shift_JISX0213 character*.
 Then round-trippedness for a Shift_JISX0213 *string* is broken.
 (E.g. Shift_JISX0213 <0x8663> and <0x857B, 0x867B> both are mapped
-to <U+00E6, U+0300>, and <U+00E6, U+0300> is mapped only to SJIS <0x8663>.)
+to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS <0x8663>.)
 
     SJIS0213  Unicode 3.2.0    # Name by JIS X 0213:2000
 

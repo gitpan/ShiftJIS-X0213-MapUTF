@@ -1,7 +1,5 @@
 package ShiftJIS::X0213::MapUTF::Supplements;
 
-require 5.006;
-
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 use vars qw(%Supplements);
@@ -12,7 +10,7 @@ require Exporter;
 @EXPORT = qw(to_sjis0213_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.02';
+$VERSION = '0.10';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
@@ -64,7 +62,7 @@ $VERSION = '0.02';
     "\x85\x44",	# BROKEN BAR (U+00A6)
 );
 
-sub to_sjis0213_supplements { $Supplements{$_[0]} || '' }
+sub to_sjis0213_supplements { defined $_[0] && $Supplements{$_[0]} || '' }
 
 1;
 __END__
@@ -78,14 +76,17 @@ ShiftJIS::X0213::MapUTF::Supplements - Supplemental Mapping from Unicode to Shif
   use ShiftJIS::X0213::MapUTF;
   use ShiftJIS::X0213::MapUTF::Supplements;
 
-  $sjis_str = unicode_to_sjis0213(\&to_sjis0213_supplements, $unicode_str);
-  $sjis_str = utf16be_to_sjis0213(\&to_sjis0213_supplements, $utf16be_str);
+  $sjis_str = utf8_to_sjis0213   (\&to_sjis0213_supplements, $utf8_str);
   $sjis_str = utf16le_to_sjis0213(\&to_sjis0213_supplements, $utf16le_str);
+  $sjis_str = utf16be_to_sjis0213(\&to_sjis0213_supplements, $utf16be_str);
+  $sjis_str = utf32le_to_sjis0213(\&to_sjis0213_supplements, $utf32le_str);
+  $sjis_str = utf32be_to_sjis0213(\&to_sjis0213_supplements, $utf32be_str);
+  $sjis_str = unicode_to_sjis0213(\&to_sjis0213_supplements, $unicode_str);
 
 =head1 DESCRIPTION
 
 This module provides some supplemental mappings (fallbacks)
-from Unicode to Shift_JISX0213.
+from Unicode to Shift_JISX0213, via a coderef, the C<UNICODE_FALLBACK> handler.
 
 =over 4
 
@@ -95,7 +96,8 @@ Returns a Shift_JISX0213 character (as a string) for some Unicode codepoints
 unmapped to Shift_JISX0213.
 Otherwise returns a null string.
 
-e.g. C<to_sjis0213_supplements(0x9B1C)> returns C<"\xFC\x5A">.
+E.g. C<to_sjis0213_supplements(0x9B1C)> returns C<"\xFC\x5A">;
+     C<to_sjis0213_supplements(0x00B5)> returns C<"\x83\xCA">.
 
 =back
 

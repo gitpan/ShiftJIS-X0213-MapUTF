@@ -6,6 +6,14 @@ MapUTF.pm
 MapUTF.xs
 MapUTF/Supplements.pm
 mkheader
-sjis0213map
-t/test.t
-t/supple.t
+sjis0213.map
+sxmuni.h
+t/t01simp.t
+t/t02null.t
+t/t03byte.t
+t/t04xncr.t
+t/t05surr.t
+t/t06comb.t
+t/t07supl.t
+t/t08illeg.t
+t/t09illfb.t
