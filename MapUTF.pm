@@ -17,7 +17,7 @@ require AutoLoader;
 );
 @EXPORT_OK = ();
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 bootstrap ShiftJIS::X0213::MapUTF $VERSION;
 
@@ -126,17 +126,20 @@ the mapping by this module will be corrected according to that mapping.
 
 =item *
 
-For Han Character (Kanji) mapping, Unicode's Unihan.txt is preferred
-to JIS X 0213:2000, since JIS X 0213:2000 had not included
-CJK Unified Ideographs Extension B mapping.
+0xFC5A in Shift_JISX0213 is mapped to U+9B1D according to JIS X 0213:2000,
+while Unicode's Unihan.txt maps it to U+9B1C.
 
-Then, SJIS 0xFC5A is mapped to U+9B1C according to Unihan.txt,
-despite that JIS X 0213:2000 maps this to U+9B1D.
+=item *
+
+0x81D4 and 0x81D5 in Shift_JISX0213 is mapped in the block
+of C<Halfwidth and Fullwidth Forms>,
+not in the block of C<Miscellaneous Mathematical Symbols-B>,
+according to Shibano's JIS KANJI JITEN, published in June, 2002.
 
 =item *
 
 The following 25 JIS Non-Kanji characters are not included in Unicode 3.2.0.
-So they are mapped to 2 characters in Unicode.
+So they are mapped to each 2 characters in Unicode.
 These mappings are done round-trippedly for *one Shift_JISX0213 character*.
 Then round-trippedness for a Shift_JISX0213 *string* is broken.
 (E.g. Shift_JISX0213 <0x8663> and <0x857B, 0x867B> both are mapped
@@ -191,6 +194,10 @@ and/or modify it under the same terms as Perl itself.
 =item JIS X 0213:2000
 
 7-bit and 8-bit double byte coded extended KANJI sets for information interchange (by JIS Committee)
+
+=item JIS KANJI JITEN, the revised edition.
+
+edited by Shibano, published by Japanese Standards Association (JSA), 2002, Tokyo [ISBN4-542-20129-5]
 
 =item L<http://www.jsa.or.jp/>
 

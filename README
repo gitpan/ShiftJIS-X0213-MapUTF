@@ -1,4 +1,4 @@
-ShiftJIS::X0213::MapUTF version 0.01
+ShiftJIS::X0213::MapUTF version 0.02
 ================
 
 NAME
@@ -53,6 +53,9 @@ SEE ALSO
 
 * JIS X 0213:2000: 7-bit and 8-bit double byte coded extended KANJI sets
     for information interchange, by JIS Committee.
+
+* Shibano, JIS KANJI JITEN (ISBN4-542-20129-5), revised,
+    Japanese Standards Association (JSA), 2002, Tokyo.
 
 * http://www.unicode.org/Public/UNIDATA/Unihan.txt, by Unicode Consortium.
 

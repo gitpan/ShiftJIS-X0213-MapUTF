@@ -1,4 +1,9 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.02  Sun Jun 30 19:45:16 2002
+    - change the mapping for 0x81D4, 0x81D5, 0xFC5A in Shift_JISX0213
+      according to Shibano's JIS KANJI JITEN, the revised edition.
+    - add Supplements.pm
+
 0.01  Sun Jun 16 18:45:16 2002
     - original version; created by h2xs 1.19

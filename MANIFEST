@@ -4,6 +4,8 @@ README
 MANIFEST
 MapUTF.pm
 MapUTF.xs
+MapUTF/Supplements.pm
 mkheader
 sjis0213map
 t/test.t
+t/supple.t
