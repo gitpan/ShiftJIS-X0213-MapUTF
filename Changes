@@ -1,5 +1,8 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.13  Sat Oct 18 12:01:25 2003
+    - pod: added link to JISC.
+
 0.12  Sat Oct 11 22:35:36 2003
     - manipulation of illegal ShiftJIS strings: SJIS_CALLBACK coderef are
       called with two parameters (like UNICODE_CODEREF).

@@ -10,7 +10,7 @@ require DynaLoader;
 
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = '0.12';
+$VERSION = '0.13';
 $PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 @EXPORT = qw(
@@ -312,23 +312,29 @@ and/or modify it under the same terms as Perl itself.
 
 =item JIS X 0213:2000
 
-7-bit and 8-bit double byte coded extended KANJI sets for information interchange (by JIS Committee)
+7-bit and 8-bit double byte coded extended KANJI sets
+for information interchange
 
-=item JIS KANJI JITEN, the revised edition.
+=item JIS KANJI JITEN, the revised edition
 
-edited by Shibano, published by Japanese Standards Association (JSA), 2002, Tokyo [ISBN4-542-20129-5]
+edited by Shibano, published by Japanese Standards Association,
+2002, Tokyo [ISBN4-542-20129-5]
 
-=item L<http://www.jsa.or.jp/>
+=item Japanese Industrial Standards Committee (JISC)
 
-Japanese Standards Association (access to JIS)
+L<http://www.jisc.go.jp/>
 
-=item L<http://www.unicode.org/Public/UNIDATA/Unihan.txt>
+=item Japanese Standards Association (JSA)
 
-Unihan database (Unicode version: 3.2.0) by Unicode (c).
+L<http://www.jsa.or.jp/>
 
-=item L<http://homepage1.nifty.com/nomenclator/unicode/sjis0213.zip>
+=item Unihan database (Unicode version: 3.2.0) by Unicode (c)
 
-A mapping table between Shift_JISX0213 and Unicode 3.2.0.
+L<http://www.unicode.org/Public/UNIDATA/Unihan.txt>
+
+=item A mapping table between Shift_JISX0213 and Unicode 3.2.0
+
+L<http://homepage1.nifty.com/nomenclator/unicode/sjis0213.zip>
 
 (This table is prepared by me, and with no authority;
 but through the table, you will know what is to be done by this module.)

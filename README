@@ -1,4 +1,4 @@
-ShiftJIS::X0213::MapUTF version 0.12
+ShiftJIS::X0213::MapUTF version 0.13
 ================
 
 NAME
@@ -64,7 +64,7 @@ SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 SEE ALSO
 
 * JIS X 0213:2000: 7-bit and 8-bit double byte coded extended KANJI sets
-    for information interchange, by JIS Committee.
+    for information interchange, by JISC.
 
 * Shibano, JIS KANJI JITEN (ISBN4-542-20129-5), revised,
     Japanese Standards Association (JSA), 2002, Tokyo.
