@@ -1,10 +1,15 @@
 Revision history for Perl module ShiftJIS::X0213::MapUTF.
 
+0.30  Mon Mar 21 10:14:02 2005
+    - META.yml is added.
+    - In s10heavy.t and t10heavy.t, UTF-8 strings to be compared are encoded
+      without the help of perl's "utf8" (as perl-current breaks these tests).
+
 0.21  Fri Mar 19 22:29:28 2004
     - The encoding name will be corrected from Shift_JIS-2003
       to Shift_JIS-2004 next month (as I have been informed).
       (see also KAISETSU 2.12 in JIS X 0213:2004.)
-    * replaced sjis-2003 by sjis-2004, and Shift_JIS-2003 by Shift_JIS-2004.
+    * replaced sjis2003 by sjis2004, and Shift_JIS-2003 by Shift_JIS-2004.
       (Function names are also corrected.)
 
 0.20  Sun Feb 29 21:00:05 2004

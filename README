@@ -1,11 +1,10 @@
-ShiftJIS::X0213::MapUTF version 0.21
+ShiftJIS::X0213::MapUTF version 0.30
 ================
 
 NAME
 
-ShiftJIS::X0213::MapUTF
-
-conversion between Shift_JIS-2004/Shift_JISX0213 and Unicode
+ShiftJIS::X0213::MapUTF - conversion
+between Shift_JIS-2004/Shift_JISX0213 and Unicode
 
 SYNOPSIS
 
@@ -74,21 +73,19 @@ To install this module type the following:
     make test
     make install
 
-COPYRIGHT AND LICENCE
+COPYRIGHT AND LICENSE
 
 SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-    http://homepage1.nifty.com/nomenclator/perl/
+Copyright(C) 2002-2005, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
-    Copyright(C) 2002-2004, SADAHIRO Tomoyuki. Japan. All rights reserved.
-
-    This module is free software; you can redistribute it
-    and/or modify it under the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 SEE ALSO
 
 * JIS X 0213:2000/Amd1:2004
 
     7-bit and 8-bit double byte coded extended KANJI sets
-    for information interchange, by JISC.
+    for information interchange
 

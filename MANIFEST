@@ -1,13 +1,14 @@
 Changes
 Makefile.PL
-README
 MANIFEST
 MapUTF.pm
 MapUTF.xs
 MapUTF/Supplements.pm
-mkheader
-sjis0213.map
-sxmuni.h
+META.yml
+mkheader	makes header files
+README
+sjis0213.map	mapping table
+sxmuni.h	some macros and functions for Unicode
 t/s01simp.t	tests for sjis2004
 t/s02null.t	tests for sjis2004
 t/s03byte.t	tests for sjis2004

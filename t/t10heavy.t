@@ -15,6 +15,30 @@ sub hexNCR {
     die sprintf "illegal byte 0x%02x was found", $byte;
 }
 
+sub toUTF8 {
+  my $u = shift;
+
+  return
+    $u <  0x0080 ? chr($u) :
+    $u <  0x0800 ?
+ pack("CC",
+  ( ($u >>  6)         | 0xc0),
+  ( ($u        & 0x3f) | 0x80)
+ ) :
+    $u < 0x10000 ?
+ pack("CCC", 
+  ( ($u >> 12)         | 0xe0),
+  ((($u >>  6) & 0x3f) | 0x80),
+  ( ($u        & 0x3f) | 0x80)
+ ) :
+ pack("CCCC",
+  ( ($u >> 18)         | 0xf0),
+  ((($u >> 12) & 0x3f) | 0x80),
+  ((($u >>  6) & 0x3f) | 0x80),
+  ( ($u        & 0x3f) | 0x80)
+ );
+}
+
 ##### 2..7
 
 my @hangul = 0xAC00..0xD7AF;
@@ -23,7 +47,7 @@ my $h_u16b = pack 'n*', @hangul;
 my $h_u32l = pack 'V*', @hangul;
 my $h_u32b = pack 'N*', @hangul;
 my $h_uni  = pack 'U*', @hangul;
-my $h_utf8 = pack 'a*', pack 'U*', @hangul;
+my $h_utf8 = join '', map toUTF8($_), @hangul;
 my $h_ncr  = join '', map sprintf("&#x%x;", $_), @hangul;
 
 print $h_ncr eq utf16le_to_sjis0213(\&hexNCR, $h_u16l)
@@ -50,7 +74,7 @@ my @overbmp = map $_ * 0x100, (0x100..0x1FF, 0x300..0x10FF);
 my $o_u32l = pack 'V*', @overbmp;
 my $o_u32b = pack 'N*', @overbmp;
 my $o_uni  = pack 'U*', @overbmp;
-my $o_utf8 = pack 'a*', pack 'U*', @overbmp;
+my $o_utf8 = join '', map toUTF8($_), @overbmp;
 my $o_ncr  = join '', map sprintf("&#x%x;", $_), @overbmp;
 
 print $o_ncr eq utf32le_to_sjis0213(\&hexNCR, $o_u32l)

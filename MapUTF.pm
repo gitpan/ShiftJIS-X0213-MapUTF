@@ -10,7 +10,7 @@ require DynaLoader;
 
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = '0.21';
+$VERSION = '0.30';
 $PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 @EXPORT = qw(
@@ -418,9 +418,7 @@ to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS-X <0x8663>.)
 
 SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-  http://homepage1.nifty.com/nomenclator/perl/
-
-  Copyright(C) 2002-2004, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2005, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
@@ -450,13 +448,6 @@ L<http://www.unicode.org/Public/UNIDATA/Unihan.txt>
 
 edited by Shibano, published by Japanese Standards Association,
 2002, Tokyo [ISBN4-542-20129-5]
-
-=item A mapping table between Shift_JIS-2004 and Unicode 3.2.0
-
-L<http://homepage1.nifty.com/nomenclator/unicode/sjis0213.zip>
-
-(This table is prepared by me, and with no authority;
-but through the table, you will know what is to be done by this module.)
 
 =item L<ShiftJIS::CP932::MapUTF>
 
