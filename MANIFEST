@@ -1,0 +1,9 @@
+Changes
+Makefile.PL
+README
+MANIFEST
+MapUTF.pm
+MapUTF.xs
+mkheader
+sjis0213map
+t/test.t
