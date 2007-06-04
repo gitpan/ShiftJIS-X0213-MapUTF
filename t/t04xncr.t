@@ -52,7 +52,7 @@ print "&#x10000;abc&#x12345;xyz&#x10fffc;" eq
 #####
 
 print "\x85\x94&#xb5;\x81\x93&#x2acde;\x83\xbf&#xacde;" x $repeat eq
-	utf16le_to_sjis0213(\&hexNCR, 
+	utf16le_to_sjis0213(\&hexNCR,
 	"\xff\x00\xb5\x00\x05\xff\x6B\xD8\xDE\xDC\xB1\x03\xde\xAC" x $repeat)
     ? "ok" : "not ok" , " ", ++$loaded, "\n";
 

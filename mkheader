@@ -33,7 +33,7 @@ sub u8len {
 
 sub u16len { ($_[0] > 0xFFFF)   ? 4 : 2 }
 sub u32len { ($_[0] > UNICODE_MAX) ? 8 : 4 }
-sub unilen { scalar @{ [ unpack 'C*', pack 'U*', splitcomp(shift) ] } }
+sub unilen { use bytes; return length(pack 'U*', splitcomp(shift)) }
 sub floor  { int($_[0]) + ($_[0] <=> int($_[0])); }
 
 die "no \%SJIS0213_UNI!" unless %SJIS0213_UNI; # avoid "once used"

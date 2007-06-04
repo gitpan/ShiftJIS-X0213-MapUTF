@@ -10,7 +10,7 @@ require DynaLoader;
 
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = '0.30';
+$VERSION = '0.31';
 $PACKAGE = 'ShiftJIS::X0213::MapUTF'; # __PACKAGE__
 
 @EXPORT = qw(
@@ -418,7 +418,7 @@ to <U+00E6, U+0300>; but <U+00E6, U+0300> is mapped only to SJIS-X <0x8663>.)
 
 SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-  Copyright(C) 2002-2005, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2007, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.

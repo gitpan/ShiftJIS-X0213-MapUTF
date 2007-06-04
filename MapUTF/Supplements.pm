@@ -10,7 +10,7 @@ require Exporter;
 @EXPORT = qw(to_sjis0213_supplements to_sjis2004_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.30';
+$VERSION = '0.31';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
@@ -134,7 +134,7 @@ may be added, modified, or removed in future.
 
 SADAHIRO Tomoyuki <SADAHIRO@cpan.org>
 
-  Copyright(C) 2002-2005, SADAHIRO Tomoyuki. Japan. All rights reserved.
+  Copyright(C) 2002-2007, SADAHIRO Tomoyuki. Japan. All rights reserved.
 
 This module is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
