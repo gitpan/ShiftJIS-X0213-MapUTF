@@ -10,7 +10,7 @@ require Exporter;
 @EXPORT = qw(to_sjis0213_supplements to_sjis2004_supplements);
 @EXPORT_OK = qw(%Supplements);
 
-$VERSION = '0.31';
+$VERSION = '0.40';
 
 %Supplements = (
   0x00B5,	# MICRO SIGN (ISO/IEC 8859-1 11/05)
